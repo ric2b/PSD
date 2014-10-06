@@ -12,7 +12,6 @@ entity control is
   port (
     clk, rst : in std_logic;
     mode : in std_logic_vector (2 downto 0);
-    enable : out std_logic;
     state : out std_logic_vector (1 downto 0));
 end control;
 
@@ -45,22 +44,18 @@ begin
           nextstate <= load1;
         end if;
         state<="00";
-        enable<='0';
         
       when load1 =>
         nextstate <= ini;
         oper<="01";
-        enable<='1';
         
       when load2 =>
         nextstate <= ini;
         oper<="10";
-        enable<='1';
         
       when oper =>
         nextstate <= ini;
         oper<="11";
-        enable<='1';
 
     end case;
   end process;
