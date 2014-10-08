@@ -62,8 +62,8 @@ BEGIN
       -- insert stimulus here 
 		reg_select <= '0';
 		rst <= '0';
-		data_in <= "0000010" after 10 ns,
-					  "0000011" after 30 ns;
+		data_in <= "0001001" after 10 ns,
+					  "0000101" after 30 ns;
 					  
 		oper <= "01" after 10 ns,
 				  "10" after 20 ns,
