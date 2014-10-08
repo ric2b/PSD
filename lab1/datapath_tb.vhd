@@ -60,6 +60,8 @@ BEGIN
    begin		
       -- hold reset state for 100 ns.
       -- insert stimulus here 
+		reg_select <= '0';
+		rst <= '0';
 		data_in <= "0000010" after 10 ns,
 					  "0000011" after 30 ns;
 					  

@@ -36,7 +36,7 @@ architecture Behavioral of datapath is
 	signal en1, en2, muxSel : std_logic := '0';
 	signal alu : std_logic_vector (12 downto 0) := (others => '0');
 	signal sra_result : std_logic_vector (12 downto 0) := (others => '0');
-	signal remainder : std_logic_vector (3 downto 0);
+	signal remainder : std_logic_vector (3 downto 0) := (others => '0');
 	-- signal mul : std_logic_vector (19 downto 0) := (others => '0');  -- 13 + 7 bits --
 begin
 	
