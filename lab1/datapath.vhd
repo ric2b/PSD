@@ -55,8 +55,10 @@ begin
 	
 	shift_ra: process
 	begin
-		for i in 0 to conv_integer(remainder) loop
-			sra_result <= reg2(12)&reg2(12 downto 1);
+		for i in 0 to 7 loop
+			if i <= remainder then
+				sra_result <= reg2(12)&reg2(12 downto 1);
+			end if;
 		end loop;
 	end process;
 	
@@ -66,7 +68,7 @@ begin
 	-- mul <= reg2 * reg1 when data_in(2 downto 0)="011";
 	with data_in(2 downto 0) select
 		alu <= reg2 + fullReg1 when "001",
-				 reg2 - fullReg1 when "010",
+				 reg2 - fullReg1 when "010",		-- mudar para usar o somador como subtrator e somador
 				 -- mul(12 downto 0) when "011", -- esta solucao nao permite converter 
 															--	os valores correctamente quando temos overflow --
 				 reg2 xor fullReg1 when "100",
