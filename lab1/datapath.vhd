@@ -35,6 +35,8 @@ architecture Behavioral of datapath is
 	signal reg2, reg2in, fullReg1, fullDataIn: std_logic_vector (12 downto 0) := (others => '0');
 	signal en1, en2, muxSel : std_logic := '0';
 	signal alu : std_logic_vector (12 downto 0) := (others => '0');
+	signal sra_result : std_logic_vector (12 downto 0) := (others => '0');
+	signal remainder : std_logic_vector (3 downto 0);
 	-- signal mul : std_logic_vector (19 downto 0) := (others => '0');  -- 13 + 7 bits --
 begin
 	
@@ -51,15 +53,24 @@ begin
 		end if;
 	end process;
 	
+	shift_ra: process
+	begin
+		for i in 0 to conv_integer(remainder) loop
+			sra_result <= reg2(12)&reg2(12 downto 1);
+		end loop;
+	end process;
+	
 	-- ALU --
+	remainder <= '0'&reg1(2 downto 0);
 	fullReg1 <= "111111"&reg1 when reg1(3)='1' else "000000"&reg1;
 	-- mul <= reg2 * reg1 when data_in(2 downto 0)="011";
 	with data_in(2 downto 0) select
 		alu <= reg2 + fullReg1 when "001",
 				 reg2 - fullReg1 when "010",
 				 -- mul(12 downto 0) when "011", -- esta solucao nao permite converter 
-														--	os valores correctamente quando temos overflow --
+															--	os valores correctamente quando temos overflow --
 				 reg2 xor fullReg1 when "100",
+				 sra_result when "101",
 				 reg2 when others;	 
 	
 	-- Mux --
