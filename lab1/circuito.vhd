@@ -36,7 +36,7 @@ architecture Behavioral of circuito is
 	 
 	signal state: std_logic_vector(1 downto 0);
 	signal input_CP2: std_logic_vector(6 downto 0);
-	signal output_signal_module: std_logic_vector(6 downto 0);
+	signal output_signal_module: std_logic_vector(12 downto 0);
 	 
 begin
 
