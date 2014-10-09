@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2014-10-08T01:36:10</DateModified>
+  <DateModified>2014-10-08T15:41:02</DateModified>
   <ModuleName>fpga</ModuleName>
   <SummaryTimeStamp>Unknown</SummaryTimeStamp>
-  <SavedFilePath>/home/ricardo/Desktop/PSD/lab1/iseconfig/fpga.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>/home/ricardo/Desktop/Xilinx_lab1</ImplementationReportsDirectory>
+  <SavedFilePath>/home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P1/Projecto1/work/lab1/iseconfig/fpga.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>/home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P1/Projecto1/trash/</ImplementationReportsDirectory>
   <DateInitialized>2014-10-08T01:36:10</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>

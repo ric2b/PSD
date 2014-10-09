@@ -86,6 +86,6 @@ begin
     );
 	 
 	sign_data_out <= "0000" when data_out(12)='0' else "1111";
-  led <= sw;
+	led <= sw;
 end behavioral;
 
