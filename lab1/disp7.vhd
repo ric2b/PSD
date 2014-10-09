@@ -21,8 +21,8 @@ architecture mixed of disp7 is
 
   type STATE_TYPE is (S0, S1, S2);
   signal cs, ns : STATE_TYPE;
-  signal en, hex : std_logic_vector(3 downto 0);
-  signal d1, d2, d3, d4 : std_logic_vector(4 downto 0);
+  signal en : std_logic_vector(3 downto 0);
+  signal d1, d2, d3, d4, hex : std_logic_vector(4 downto 0);
   signal led : std_logic_vector(7 downto 0);
   signal count : std_logic_vector(1 downto 0);
   signal cnt_en, srg_en, en_oe : std_logic;
