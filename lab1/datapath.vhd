@@ -36,8 +36,8 @@ architecture Behavioral of datapath is
 	signal reg2, reg2in, fullReg1, fullDataIn, sra_result, sra_result0, sra_result1: std_logic_vector (13 downto 0) := (others => '0');
 	signal en1, en2, muxSel : std_logic := '0';
 	signal alu : std_logic_vector (13 downto 0) := (others => '0');
-	signal mul : std_logic_vector (20 downto 0) := (others => '0');  -- 13 + 7 bits --
-	signal mul_overflow, alu_overflow : std_logic;
+	signal mul, mul_result : std_logic_vector (20 downto 0) := (others => '0');  -- 14 + 7 bits --
+	signal mul_overflow : std_logic := '0';
 begin
 	
 	-- Register 1 --
@@ -79,7 +79,10 @@ begin
 	sra_result <= sra_result0 when reg2(13)='0' else sra_result1;
 	
 	-- Multiplication --
-	mul <= reg2 * reg1;
+	mul_result <= reg2 * reg1;
+	mul_overflow <= '1' when ((mul(20 downto 12)/="111111111" and mul(20 downto 12)/="000000000")) else '0';
+	mul <= mul_result when mul_overflow='0' else "101010101010101010101";
+	
 	with data_in(2 downto 0) select
 		alu <= reg2 + fullReg1 when "001",
 				 reg2 - fullReg1 when "010",
@@ -88,10 +91,8 @@ begin
 				 sra_result when "101",
 				 reg2 when others;	 
 	
-	alu_overflow <= alu(13) xor alu(12); -- os dois bits mais significativos forem iguais
-	mul_overflow <= '1' when ((mul(20 downto 12)/="111111111" and mul(20 downto 12)/="000000000") and data_in(2 downto 0)="011" and oper="11") else '0';
-	overflow <= (mul_overflow or alu_overflow) and muxSel; 
-
+	--reg2_overflow <= reg2(13) xor reg2(12); -- os dois bits mais significativos forem iguais
+	overflow <= ((reg2(13) xor reg2(12)) and (not reg_select)); 
 	
 	-- Mux --
 	muxSel <= oper(0);
