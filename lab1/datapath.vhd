@@ -33,12 +33,11 @@ end datapath;
 
 architecture Behavioral of datapath is
 	signal reg1 : std_logic_vector (6 downto 0) := (others => '0');
-	signal reg2, reg2in, fullReg1, fullDataIn: std_logic_vector (12 downto 0) := (others => '0');
+	signal reg2, reg2in, fullReg1, fullDataIn, sra_result, sra_result0, sra_result1: std_logic_vector (13 downto 0) := (others => '0');
 	signal en1, en2, muxSel : std_logic := '0';
-	signal alu : std_logic_vector (12 downto 0) := (others => '0');
-	signal sra_result, sra_result0, sra_result1 : std_logic_vector (12 downto 0) := (others => '0');
-	signal mul : std_logic_vector (19 downto 0) := (others => '0');  -- 13 + 7 bits --
-	signal result_neg, result_pos : std_logic := '0';
+	signal alu : std_logic_vector (13 downto 0) := (others => '0');
+	signal mul : std_logic_vector (20 downto 0) := (others => '0');  -- 13 + 7 bits --
+	signal mul_overflow, alu_overflow : std_logic;
 begin
 	
 	-- Register 1 --
@@ -53,49 +52,50 @@ begin
 			end if;
 		end if;
 	end process;
-	fullReg1 <= "111111"&reg1 when reg1(6)='1' else "000000"&reg1;
+	fullReg1 <= "1111111"&reg1 when reg1(6)='1' else "0000000"&reg1;
 	
 	-- ALU --
 	-- SRA --
 	with reg1(2 downto 0) select
-		sra_result1 <= "1"&reg2(12 downto 1) when "001",
-			  			   "11"&reg2(12 downto 2) when "010",
-						   "111"&reg2(12 downto 3) when "011",
-						   "1111"&reg2(12 downto 4) when "100",
-						   "11111"&reg2(12 downto 5) when "101",
-						   "111111"&reg2(12 downto 6) when "110",
-						   "1111111"&reg2(12 downto 7) when "111",
+		sra_result1 <= "1"&reg2(13 downto 1) when "001",
+			  			   "11"&reg2(13 downto 2) when "010",
+						   "111"&reg2(13 downto 3) when "011",
+						   "1111"&reg2(13 downto 4) when "100",
+						   "11111"&reg2(13 downto 5) when "101",
+						   "111111"&reg2(13 downto 6) when "110",
+						   "1111111"&reg2(13 downto 7) when "111",
 						   reg2 when others;
 							
 	with reg1(2 downto 0) select
-		sra_result0 <= "0"&reg2(12 downto 1) when "001",
-							"00"&reg2(12 downto 2) when "010",
-							"000"&reg2(12 downto 3) when "011",
-							"0000"&reg2(12 downto 4) when "100",
-							"00000"&reg2(12 downto 5) when "101",
-							"000000"&reg2(12 downto 6) when "110",
-							"0000000"&reg2(12 downto 7) when "111",
+		sra_result0 <= "0"&reg2(13 downto 1) when "001",
+							"00"&reg2(13 downto 2) when "010",
+							"000"&reg2(13 downto 3) when "011",
+							"0000"&reg2(13 downto 4) when "100",
+							"00000"&reg2(13 downto 5) when "101",
+							"000000"&reg2(13 downto 6) when "110",
+							"0000000"&reg2(13 downto 7) when "111",
 							reg2 when others;
 	
-	sra_result <= sra_result0 when reg2(12)='0' else sra_result1;
+	sra_result <= sra_result0 when reg2(13)='0' else sra_result1;
 	
 	-- Multiplication --
-	mul <= reg2 * reg1 when data_in(2 downto 0)="011";
-	result_neg <= '1' when (mul(18 downto 12) and "1111111")="1111111" else '0';
-	result_pos <= '1' when (mul(18 downto 12) or "0000000")="0000000" else '0';
-	overflow <= (mul(19) and result_neg) or ((not mul(19)) and result_pos);
-	
+	mul <= reg2 * reg1;
 	with data_in(2 downto 0) select
 		alu <= reg2 + fullReg1 when "001",
 				 reg2 - fullReg1 when "010",
-				 mul(12 downto 0) when "011",
+				 mul(13 downto 0) when "011",
 				 reg2 xor fullReg1 when "100",
 				 sra_result when "101",
 				 reg2 when others;	 
 	
+	alu_overflow <= alu(13) xor alu(12); -- os dois bits mais significativos forem iguais
+	mul_overflow <= '1' when ((mul(20 downto 12)/="111111111" and mul(20 downto 12)/="000000000") and data_in(2 downto 0)="011" and oper="11") else '0';
+	overflow <= (mul_overflow or alu_overflow) and muxSel; 
+
+	
 	-- Mux --
 	muxSel <= oper(0);
-	fullDataIn <= "111111"&data_in when data_in(6)='1' else "000000"&data_in;
+	fullDataIn <= "1111111"&data_in when data_in(6)='1' else "0000000"&data_in;
 	reg2in <= alu when muxSel='1' else fullDataIn;
 	
 	-- Register 2 --
@@ -111,6 +111,6 @@ begin
 		end if;
 	end process;
 	
-	data_out <= reg2 when reg_select='0' else fullReg1;
+	data_out <= reg2(12 downto 0) when reg_select='0' else fullReg1(12 downto 0);
 	
 end Behavioral;
