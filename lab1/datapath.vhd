@@ -1,26 +1,9 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    22:08:33 10/06/2014 
--- Design Name: 
--- Module Name:    datapath - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_SIGNED.ALL;
+
+-- Este bloco faz as operacoes matematicas/logicas e o load dos registos. É controlado pela unidade de controlo e tem como saídas os dois registos R1 e R2
 
 entity datapath is
     Port ( data_in : in  STD_LOGIC_VECTOR (6 downto 0);

@@ -9,7 +9,7 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_SIGNED.ALL;
 
 entity circuito is
-    Port ( mode : in  STD_LOGIC_VECTOR (2 downto 0);
+    Port ( instr : in  STD_LOGIC_VECTOR (2 downto 0);
            data_in : in  STD_LOGIC_VECTOR (6 downto 0);
 			  reg_select : in std_logic;
            output_signal_module : out  STD_LOGIC_VECTOR (12 downto 0);
@@ -22,8 +22,8 @@ architecture Behavioral of circuito is
 	component control
 		port (
 				 clk : in std_logic;
-				 mode : in std_logic_vector (2 downto 0);
-				 state : out std_logic_vector (1 downto 0)
+				 instr : in std_logic_vector (2 downto 0);
+				 state_signal : out std_logic_vector (1 downto 0)
 		);
 	end component;
 
@@ -48,8 +48,8 @@ begin
 	
 	inst_control: control port map(
 		clk => clk,
-		mode => mode,
-		state => state		
+		instr => instr,
+		state_signal => state		
 	);
 
 	inst_datapath: datapath port map(

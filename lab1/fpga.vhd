@@ -23,7 +23,7 @@ end fpga;
 architecture Behavioral of fpga is
   component circuito
     port(
-		mode : in  STD_LOGIC_VECTOR (2 downto 0);
+		instr : in  STD_LOGIC_VECTOR (2 downto 0);
       data_in : in  STD_LOGIC_VECTOR (6 downto 0);
 		reg_select : in std_logic;
       output_signal_module : out  STD_LOGIC_VECTOR (12 downto 0);
@@ -61,7 +61,7 @@ begin
   inst_circuito: circuito port map(
     clk => clk10Hz,
     reset => btn(3),
-    mode => btn(2 downto 0),
+    instr => btn(2 downto 0),
     data_in => sw (6 downto 0),
 	 reg_select => sw(7),
     output_signal_module => data_out
