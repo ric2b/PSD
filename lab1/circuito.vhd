@@ -42,8 +42,9 @@ architecture Behavioral of circuito is
 	 
 begin
 
-	input_CP2 <= (not('1' & data_in(5 downto 0)) + '1') when data_in(6) = '1' else data_in;
-	output_signal_module <= ('1' & not(data_out(11 downto 0)) + '1') when data_out(12) = '1' else data_out;
+	--input_CP2 <= (not data_in) + 1 when data_in(6) = '1' else data_in;
+	input_CP2 <= data_in when data_in(6)='0' else (('1'&(not data_in(5 downto 0))) + 1);
+	output_signal_module <= ('1'&(not(data_out(11 downto 0))))+1 when data_out(12) = '1' else data_out;	
 	
 	inst_control: control port map(
 		clk => clk,

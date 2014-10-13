@@ -27,8 +27,7 @@ entity datapath is
 			  reg_select : in STD_LOGIC;
 			  oper : in STD_LOGIC_VECTOR (1 downto 0);
 			  clk, rst : in STD_LOGIC;
-           data_out : out  STD_LOGIC_VECTOR (12 downto 0);
-			  overflow : out STD_LOGIC);
+           data_out : out  STD_LOGIC_VECTOR (12 downto 0));
 end datapath;
 
 architecture Behavioral of datapath is
@@ -81,7 +80,7 @@ begin
 	-- Multiplication --
 	mul_result <= reg2 * reg1;
 	mul_overflow <= '1' when ((mul(20 downto 12)/="111111111" and mul(20 downto 12)/="000000000")) else '0';
-	mul <= mul_result when mul_overflow='0' else "101010101010101010101";
+	mul <= mul_result when mul_overflow='0' else "000000000000000000000";
 	
 	with data_in(2 downto 0) select
 		alu <= reg2 + fullReg1 when "001",
@@ -90,9 +89,6 @@ begin
 				 reg2 xor fullReg1 when "100",
 				 sra_result when "101",
 				 reg2 when others;	 
-	
-	--reg2_overflow <= reg2(13) xor reg2(12); -- os dois bits mais significativos forem iguais
-	overflow <= ((reg2(13) xor reg2(12)) and (not reg_select)); 
 	
 	-- Mux --
 	muxSel <= oper(0);
