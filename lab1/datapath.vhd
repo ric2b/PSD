@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_SIGNED.ALL;
 
--- Este bloco faz as operacoes matematicas/logicas e o load dos registos. É controlado pela unidade de controlo e tem como saídas os dois registos R1 e R2
+-- Este bloco faz as operacoes matematicas/logicas e o load dos registos.  controlado pela unidade de controlo e tem como sadas os dois registos R1 e R2
 
 entity datapath is
     Port ( data_in : in  STD_LOGIC_VECTOR (6 downto 0);
@@ -17,9 +17,9 @@ architecture Behavioral of datapath is
 	signal reg1 : std_logic_vector (6 downto 0) := (others => '0');
 	signal reg2, reg2in, fullReg1, fullDataIn, sra_result, sra_result0, sra_result1: std_logic_vector (13 downto 0) := (others => '0');
 	signal en1, en2, muxSel : std_logic := '0';
-	signal alu : std_logic_vector (13 downto 0) := (others => '0');
+	signal alu, alu_result : std_logic_vector (13 downto 0) := (others => '0');
 	signal mul, mul_result : std_logic_vector (20 downto 0) := (others => '0');  -- 14 + 7 bits --
-	signal mul_overflow : std_logic := '0';
+	signal mul_overflow, alu_overflow : std_logic := '0';
 begin
 	
 	-- Register 1 --
@@ -62,16 +62,19 @@ begin
 	
 	-- Multiplication --
 	mul_result <= reg2 * reg1;
-	mul_overflow <= '1' when ((mul(20 downto 12)/="111111111" and mul(20 downto 12)/="000000000")) else '0';
-	mul <= mul_result when mul_overflow='0' else "000000000000000000000";
+	mul_overflow <= '1' when ((mul_result(20 downto 12)/="111111111" and mul_result(20 downto 12)/="000000000")) else '0';
+	mul <= mul_result when mul_overflow='0' else (others => '0');
 	
 	with data_in(2 downto 0) select
-		alu <= reg2 + fullReg1 when "001",
-				 reg2 - fullReg1 when "010",
-				 mul(13 downto 0) when "011",
-				 reg2 xor fullReg1 when "100",
-				 sra_result when "101",
-				 reg2 when others;	 
+		alu_result <= reg2 + fullReg1 when "001",
+						  reg2 - fullReg1 when "010",
+						  mul(13 downto 0) when "011",
+						  reg2 xor fullReg1 when "100",
+						  sra_result when "101",
+						  reg2 when others;	 
+	
+	alu_overflow <= alu(13) xor alu(12);
+	alu <= alu_result when alu_overflow='0' else (others => '0');
 	
 	-- Mux --
 	muxSel <= oper(0);
