@@ -99,7 +99,7 @@ BEGIN
 					  "0000011" after 50 ns,
 					  "1011100" after 60 ns, -- -36 * -36 = 1296--
 					  "0000011" after 70 ns,
-					  "0000011" after 80 ns, -- 3 * 1296 = overflow --
+					  "0000110" after 80 ns, -- 6 * 1296 = overflow --
 					  "0000011" after 90 ns;
 					  
 		oper <= "01" after 10 ns,

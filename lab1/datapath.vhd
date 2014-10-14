@@ -17,10 +17,15 @@ architecture Behavioral of datapath is
 	signal reg1 : std_logic_vector (6 downto 0) := (others => '0');
 	signal reg2, reg2in, fullReg1, fullDataIn, sra_result, sra_result0, sra_result1: std_logic_vector (13 downto 0) := (others => '0');
 	signal en1, en2, muxSel : std_logic := '0';
-	signal alu, alu_result : std_logic_vector (13 downto 0) := (others => '0');
-	signal mul, mul_result : std_logic_vector (20 downto 0) := (others => '0');  -- 14 + 7 bits --
+	signal mul, alu, alu_result : std_logic_vector (13 downto 0) := (others => '0');
+	signal mul_result : std_logic_vector (20 downto 0) := (others => '0');  -- 14 + 7 bits --
 	signal mul_overflow, alu_overflow : std_logic := '0';
+	signal input_CP2: std_logic_vector(6 downto 0);
+	signal out_CP2: std_logic_vector(12 downto 0);
 begin
+	
+	-- converter entrada de sinal-mdulo para complemento para dois --
+	input_CP2 <= data_in when data_in(6)='0' else (('1'&(not data_in(5 downto 0))) + 1);
 	
 	-- Register 1 --
 	en1 <= (not oper(1)) and oper(0);
@@ -30,7 +35,7 @@ begin
 			if rst='1' then
 				reg1 <= (others => '0');
 			elsif en1='1' then
-				reg1 <= data_in;
+				reg1 <= input_CP2;
 			end if;
 		end if;
 	end process;
@@ -63,22 +68,22 @@ begin
 	-- Multiplication --
 	mul_result <= reg2 * reg1;
 	mul_overflow <= '1' when ((mul_result(20 downto 12)/="111111111" and mul_result(20 downto 12)/="000000000")) else '0';
-	mul <= mul_result when mul_overflow='0' else (others => '0');
+	mul <= mul_result(13 downto 0) when mul_overflow='0' else (others => '0');
 	
-	with data_in(2 downto 0) select
+	with input_CP2(2 downto 0) select
 		alu_result <= reg2 + fullReg1 when "001",
 						  reg2 - fullReg1 when "010",
-						  mul(13 downto 0) when "011",
+						  mul when "011",
 						  reg2 xor fullReg1 when "100",
 						  sra_result when "101",
 						  reg2 when others;	 
 	
-	alu_overflow <= alu(13) xor alu(12);
+	alu_overflow <= alu_result(13) xor alu_result(12);
 	alu <= alu_result when alu_overflow='0' else (others => '0');
 	
 	-- Mux --
 	muxSel <= oper(0);
-	fullDataIn <= "1111111"&data_in when data_in(6)='1' else "0000000"&data_in;
+	fullDataIn <= "1111111"&input_CP2 when input_CP2(6)='1' else "0000000"&input_CP2;
 	reg2in <= alu when muxSel='1' else fullDataIn;
 	
 	-- Register 2 --
@@ -94,6 +99,8 @@ begin
 		end if;
 	end process;
 	
-	data_out <= reg2(12 downto 0) when reg_select='0' else fullReg1(12 downto 0);
+	out_CP2 <= reg2(12 downto 0) when reg_select='0' else fullReg1(12 downto 0);
+	data_out <= ('1'&(not(out_CP2(11 downto 0))))+1 when out_CP2(12) = '1' else out_CP2;	
+	
 	
 end Behavioral;

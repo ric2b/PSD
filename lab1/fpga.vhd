@@ -26,7 +26,7 @@ architecture Behavioral of fpga is
 		instr : in  STD_LOGIC_VECTOR (2 downto 0);
       data_in : in  STD_LOGIC_VECTOR (6 downto 0);
 		reg_select : in std_logic;
-      output_signal_module : out  STD_LOGIC_VECTOR (12 downto 0);
+      data_out : out  STD_LOGIC_VECTOR (12 downto 0);
       clk : in  STD_LOGIC;
       reset : in  STD_LOGIC
       );
@@ -64,7 +64,7 @@ begin
     instr => btn(2 downto 0),
     data_in => sw (6 downto 0),
 	 reg_select => sw(7),
-    output_signal_module => data_out
+    data_out => data_out
     );
   inst_clkdiv: clkdiv port map(
     clk => mclk,
