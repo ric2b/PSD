@@ -2,15 +2,15 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   19:05:22 10/09/2014
+-- Create Date:   13:55:39 10/19/2014
 -- Design Name:   
--- Module Name:   /home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P1/Projecto1/work/lab1/datapath_tb.vhd
+-- Module Name:   /home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P1/Projecto1/work/lab1/circuito_tb.vhd
 -- Project Name:  lab1
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
 -- 
--- VHDL Test Bench Created by ISE for module: datapath
+-- VHDL Test Bench Created by ISE for module: circuito
 -- 
 -- Dependencies:
 -- 
@@ -32,36 +32,34 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY datapath_tb IS
-END datapath_tb;
+ENTITY circuito_tb IS
+END circuito_tb;
  
-ARCHITECTURE behavior OF datapath_tb IS 
+ARCHITECTURE behavior OF circuito_tb IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
-    COMPONENT datapath
+    COMPONENT circuito
     PORT(
+         instr : IN  std_logic_vector(2 downto 0);
          data_in : IN  std_logic_vector(6 downto 0);
          reg_select : IN  std_logic;
-         oper : IN  std_logic_vector(1 downto 0);
-         clk : IN  std_logic;
-         rst : IN  std_logic;
          data_out : OUT  std_logic_vector(12 downto 0);
-         overflow : OUT  std_logic
+         clk : IN  std_logic;
+         reset : IN  std_logic
         );
     END COMPONENT;
     
 
    --Inputs
+   signal instr : std_logic_vector(2 downto 0) := (others => '0');
    signal data_in : std_logic_vector(6 downto 0) := (others => '0');
    signal reg_select : std_logic := '0';
-   signal oper : std_logic_vector(1 downto 0) := (others => '0');
    signal clk : std_logic := '0';
-   signal rst : std_logic := '0';
+   signal reset : std_logic := '0';
 
  	--Outputs
    signal data_out : std_logic_vector(12 downto 0);
-   signal overflow : std_logic;
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -69,14 +67,13 @@ ARCHITECTURE behavior OF datapath_tb IS
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
-   uut: datapath PORT MAP (
+   uut: circuito PORT MAP (
+          instr => instr,
           data_in => data_in,
           reg_select => reg_select,
-          oper => oper,
-          clk => clk,
-          rst => rst,
           data_out => data_out,
-          overflow => overflow
+          clk => clk,
+          reset => reset
         );
 
    -- Clock process definitions
@@ -94,48 +91,37 @@ BEGIN
    begin		
       -- hold reset state for 100 ns.
       -- insert stimulus here 
-		reg_select <= '0' after 0 ns,
-						  '1' after 5 ns,
-						  '0' after 15 ns,
-						  '1' after 20 ns,
-						  '0' after 25 ns,
-						  '1' after 30 ns,
-						  '0' after 35 ns,
-						  '1' after 40 ns,
-						  '0' after 45 ns,
-						  '1' after 50 ns,
-						  '0' after 55 ns,
-						  '1' after 60 ns,
-						  '0' after 65 ns,
-						  '1' after 70 ns,
-						  '0' after 75 ns,
-						  '1' after 80 ns,
-						  '0' after 85 ns,
-						  '1' after 90 ns,
-						  '0' after 95 ns,
-						  '1' after 100 ns,
-						  '0' after 105 ns;
-		rst <= '0';
-		data_in <= "0000011" after 10 ns, -- 3 * 4 = 12--
-					  "0000100" after 20 ns,
-					  "0000011" after 30 ns,
-					  "1111101" after 40 ns, -- -3 * 12 = -36 --
-					  "0000011" after 50 ns,
-					  "1011100" after 60 ns, -- -36 * -36 = 1296--
-					  "0000011" after 70 ns,
-					  "0000011" after 80 ns, -- 3 * 1296 = overflow --
-					  "0000011" after 90 ns;
+		
+--		data_in <= "0000011" after 10 ns,  	-- R1 <- 3 --
+--					  "0000111" after 40 ns,	-- R2 <- 7 --
+--					  "0000001" after 70 ns;	-- R2 <- R1 + R2 --
+--		
+--		instr <= "100" after 10 ns, -- R1 <- 3 --
+--					"000" after 20 ns,
+--					"010" after 40 ns, -- R2 <- 7 --
+--					"000" after 50 ns,
+--					"001" after 70 ns, -- R2 <- R1 + R2 --
+--					"000" after 80 ns;
+--		
+--		reg_select <= '1' after 10 ns, -- mostrar R1 --
+--						  '0' after 40 ns; -- mostrar R2 --
 					  
-		oper <= "01" after 10 ns,
-				  "10" after 20 ns,
-				  "11" after 30 ns,
-				  "01" after 40 ns,
-				  "11" after 50 ns,
-				  "01" after 60 ns,
-				  "11" after 70 ns,
-				  "01" after 80 ns,
-				  "11" after 90 ns,
-				  "00" after 100 ns;
+		data_in <= "0111111" after 10 ns,  	-- R1 <- +63 --
+					  "1111111" after 40 ns,	-- R2 <- -63 --
+					  "0000011" after 70 ns;	-- R2 <- R1 + R2 --
+		
+		instr <= "100" after 10 ns, -- R1 <- +63 --
+					"000" after 20 ns,
+					"010" after 40 ns, -- R2 <- -63 --
+					"000" after 50 ns,
+					"001" after 70 ns, -- R2 <- R1 * R2 --
+					"000" after 80 ns,
+					"001" after 90 ns, -- overflow R2 <- R1 * R2 --
+					"000" after 100 ns;
+		
+		reg_select <= '1' after 10 ns, -- mostrar R1 --
+						  '0' after 40 ns; -- mostrar R2 --
+		
       wait;
    end process;
 
