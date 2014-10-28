@@ -33,7 +33,7 @@ use IEEE.STD_LOGIC_SIGNED.ALL;
 
 entity datapath is
     Port ( clk : in STD_LOGIC;
-			  enR1 : in  STD_LOGIC;
+			  RS1_enable : in  STD_LOGIC;
            X1_select1 : in  STD_LOGIC_VECTOR (1 downto 0);
            X1_select2 : in  STD_LOGIC_VECTOR (1 downto 0);
            X2_select1 : in  STD_LOGIC_VECTOR (1 downto 0);
@@ -41,8 +41,8 @@ entity datapath is
            adder_select : in  STD_LOGIC;
 			  adder_control : in STD_LOGIC;
            matrix : in  STD_LOGIC_VECTOR (143 downto 0);
-           result : out  STD_LOGIC_VECTOR (15 downto 0));
-			 
+           result : out  STD_LOGIC_VECTOR (15 downto 0)
+			  );			 
 end datapath;
 
 architecture Behavioral of datapath is
@@ -99,7 +99,7 @@ begin
 						 
 	-- Mux Adder --
 	with adder_select select
-		adder_input1 <= regX2 when '0',
+		adder_input2 <= regX2 when '0',
 							 reg1 when '1',
 							 x"0000" when others;
 						 
@@ -107,7 +107,7 @@ begin
 	-- Register R1 --
 	process (clk)
 	begin
-		if clk'event and clk='1' and enR1='1' then
+		if clk'event and clk='1' and RS1_enable='1' then
 			reg1 <= reg1_input;
 		end if;
 	end process;
@@ -141,10 +141,17 @@ begin
 	-- Multiplier X2 --
 	x2_out <= x2_input1 * x2_input2;
 	-- Adder/Subtractor --
+	adder_input1 <= regX1;
 	with adder_control select
 		adder_out <= adder_input1 + adder_input2 when '0',
 						 adder_input1 - adder_input2 when '1',
 						 x"0000" when others;
-
+						 
+	reg1_input <= adder_out;
+	reg2_input <= adder_out;
+	regX1_input <= x1_out(15 downto 0);
+	regX2_input <= x2_out(15 downto 0);
+	result <= reg1;
+	
 end Behavioral;
 
