@@ -40,7 +40,15 @@ entity datapath is
            X2_select2 : in  STD_LOGIC_VECTOR (1 downto 0);
            adder_select : in  STD_LOGIC;
 			  adder_control : in STD_LOGIC;
-           matrix : in  STD_LOGIC_VECTOR (143 downto 0);
+           a : in STD_LOGIC_VECTOR (15 downto 0);
+			  b : in STD_LOGIC_VECTOR (15 downto 0);
+			  c : in STD_LOGIC_VECTOR (15 downto 0);
+			  d : in STD_LOGIC_VECTOR (15 downto 0);
+			  e : in STD_LOGIC_VECTOR (15 downto 0);
+			  f : in STD_LOGIC_VECTOR (15 downto 0);
+			  g : in STD_LOGIC_VECTOR (15 downto 0);
+			  h : in STD_LOGIC_VECTOR (15 downto 0);
+			  i : in STD_LOGIC_VECTOR (15 downto 0);
            result : out  STD_LOGIC_VECTOR (15 downto 0)
 			  );			 
 end datapath;
@@ -50,56 +58,44 @@ architecture Behavioral of datapath is
 	signal adder_out : std_logic_vector (15 downto 0);
 	signal x1_out, x2_out : std_logic_vector (31 downto 0);
 	signal reg1_input, reg2_input, regX1_input, regX2_input : std_logic_vector (15 downto 0);
-	signal a, b, c, d, e, f, g, h ,i : std_logic_vector (15 downto 0);
 	signal reg1, reg2, regX1, regX2 : std_logic_vector (15 downto 0);
 begin
-	
-	-- inputs --
-	a <= matrix(143 downto 128);
-	b <= matrix(127 downto 112);
-	c <= matrix(111 downto 96);
-	d <= matrix(95 downto 80);
-	e <= matrix(79 downto 64);
-	f <= matrix(63 downto 48);
-	g <= matrix(47 downto 32);
-	h <= matrix(31 downto 16);
-	i <= matrix(15 downto 0);
 	
 	-- Mux X1.1 --
 	with X1_select1 select
 		x1_input1 <= a when "00",
-						 f when "01",
-						 d when "10",
-						 c when "11",
+						 h when "01",
+						 g when "10",
+						 i when "11",
 						 x"0000" when others;
 						
 	-- Mux X1.2 --
 	with X1_select2 select
 		x1_input2 <= e when "00",
-						 g when "01",
-						 h when "10",
+						 f when "01",
+						 d when "10",
 						 reg1 when "11",
 						 x"0000" when others;
 						 
 	-- Mux X2.1 --
 	with X2_select1 select
-		x2_input1 <= f when "00",
-						 d when "01",
-						 e when "10",
+		x2_input1 <= e when "00",
+						 f when "01",
+						 d when "10",
 						 reg2 when "11",
 						 x"0000" when others;
 						 
 	-- Mux X2.2 --
 	with X2_select2 select
-		x2_input2 <= h when "00",
-						 i when "01",
-						 g when "10",
+		x2_input2 <= g when "00",
+						 h when "01",
+						 c when "10",
 						 b when "11",
 						 x"0000" when others;
 						 
 	-- Mux Adder --
 	with adder_select select
-		adder_input2 <= regX2 when '0',
+		adder_input1 <= regX1 when '0',
 							 reg1 when '1',
 							 x"0000" when others;
 						 
@@ -141,7 +137,7 @@ begin
 	-- Multiplier X2 --
 	x2_out <= x2_input1 * x2_input2;
 	-- Adder/Subtractor --
-	adder_input1 <= regX1;
+	adder_input2 <= regX2;
 	with adder_control select
 		adder_out <= adder_input1 + adder_input2 when '0',
 						 adder_input1 - adder_input2 when '1',

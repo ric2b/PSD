@@ -78,28 +78,28 @@ begin
 		        
       when cycle_1 =>
         nextstate <= cycle_2;
-        X1_select1 <= "01";
-        X1_select2 <= "10";
-        X2_select1 <= "10";
+        X1_select1 <= "11";
+        X1_select2 <= "00";
+        X2_select1 <= "01";
         X2_select2 <= "01";
  
 		when cycle_2 =>
         nextstate <= cycle_3;
         RS1_enable <= '1';
-        X1_select1 <= "01";
-        X1_select2 <= "01";
+        X1_select1 <= "11";
+        X1_select2 <= "10";
         X2_select1 <= "01";
-        X2_select2 <= "01";
+        X2_select2 <= "00";
         adder_select <= '0';
 		  adder_control <= '1';
 
       when cycle_3 =>
         nextstate <= cycle_4;
         RS1_enable <= '0';
-        X1_select1 <= "10";
+        X1_select1 <= "01";
         X1_select2 <= "10";
-        X2_select1 <= "10";
-        X2_select2 <= "10";
+        X2_select1 <= "00";
+        X2_select2 <= "00";
         adder_select <= '0';
 		  adder_control <= '1';
         
@@ -116,10 +116,10 @@ begin
 		when cycle_5 =>
         nextstate <= cycle_6;
         RS1_enable <= '1';
-        X1_select1 <= "11";
-        X1_select2 <= "11";
+        X2_select1 <= "11";
+        X2_select2 <= "10";
         adder_select <= '0';
-		  adder_control <= '0';
+		  adder_control <= '1';
 		  
 		when cycle_6 =>
         nextstate <= s_initial;

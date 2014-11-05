@@ -11,7 +11,15 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity circuito is
   port (
     clk, rst, start: in std_logic;
-	 matrix : in  STD_LOGIC_VECTOR (143 downto 0);
+	 a : in STD_LOGIC_VECTOR (15 downto 0);
+	 b : in STD_LOGIC_VECTOR (15 downto 0);
+	 c : in STD_LOGIC_VECTOR (15 downto 0);
+	 d : in STD_LOGIC_VECTOR (15 downto 0);
+	 e : in STD_LOGIC_VECTOR (15 downto 0);
+	 f : in STD_LOGIC_VECTOR (15 downto 0);
+	 g : in STD_LOGIC_VECTOR (15 downto 0);
+	 h : in STD_LOGIC_VECTOR (15 downto 0);
+	 i : in STD_LOGIC_VECTOR (15 downto 0);
 	 result : out STD_LOGIC_VECTOR (15 downto 0)
 	 );
 end circuito;
@@ -40,7 +48,15 @@ architecture Behavioral of circuito is
 		  X2_select2 : in  STD_LOGIC_VECTOR (1 downto 0);
 		  adder_select : in  STD_LOGIC;
 		  adder_control : in STD_LOGIC;
-		  matrix : in  STD_LOGIC_VECTOR (143 downto 0);
+		  a : in STD_LOGIC_VECTOR (15 downto 0);
+		  b : in STD_LOGIC_VECTOR (15 downto 0);
+		  c : in STD_LOGIC_VECTOR (15 downto 0);
+		  d : in STD_LOGIC_VECTOR (15 downto 0);
+		  e : in STD_LOGIC_VECTOR (15 downto 0);
+		  f : in STD_LOGIC_VECTOR (15 downto 0);
+		  g : in STD_LOGIC_VECTOR (15 downto 0);
+		  h : in STD_LOGIC_VECTOR (15 downto 0);
+		  i : in STD_LOGIC_VECTOR (15 downto 0);
 		  result : out  STD_LOGIC_VECTOR (15 downto 0)
       );
   end component;
@@ -71,7 +87,15 @@ begin
 	 X2_select2 => X2_select2,
 	 adder_select => adder_select,
 	 adder_control => adder_control,
-	 matrix => matrix,
+	 a => a,
+	 b => b,
+	 c => c,
+	 d => d,
+	 e => e,
+	 f => f,
+	 g => g,
+	 h => h,
+	 i => i,
 	 result => result
     );
 
