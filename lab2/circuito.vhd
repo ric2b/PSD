@@ -63,6 +63,8 @@ architecture Behavioral of circuito is
 
   signal RS1_enable, adder_select, adder_control : std_logic;
   signal X1_select1, X1_select2, X2_select1, X2_select2 : std_logic_vector(1 downto 0);
+  
+  signal control_reg : std_logic_vector (10 downto 0);
 
 begin
   inst_control: control port map(
@@ -77,16 +79,24 @@ begin
 	 adder_select => adder_select,
 	 adder_control => adder_control
     );
-  
+	 
+	process (clk)
+	begin
+		if clk'event and clk='1' then
+			control_reg <= RS1_enable & adder_select & adder_control 
+								& X1_select1 & X1_select2 & X2_select1 & X2_select2;
+		end if;
+	end process;
+	 
   inst_datapath: datapath port map(
     clk => clk,
-    RS1_enable => RS1_enable,
-    X1_select1 => X1_select1,
-	 X1_select2 => X1_select2,
-	 X2_select1 => X2_select1,
-	 X2_select2 => X2_select2,
-	 adder_select => adder_select,
-	 adder_control => adder_control,
+    RS1_enable => control_reg(0),
+	 adder_select => control_reg(1),
+	 adder_control => control_reg(2),
+    X1_select1 => control_reg(4 downto 3),
+	 X1_select2 => control_reg(6 downto 5),
+	 X2_select1 => control_reg(8 downto 7),
+	 X2_select2 => control_reg(10 downto 9),
 	 a => a,
 	 b => b,
 	 c => c,
