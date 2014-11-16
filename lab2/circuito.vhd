@@ -20,7 +20,9 @@ entity circuito is
 	 g : in STD_LOGIC_VECTOR (15 downto 0);
 	 h : in STD_LOGIC_VECTOR (15 downto 0);
 	 i : in STD_LOGIC_VECTOR (15 downto 0);
-	 result : out STD_LOGIC_VECTOR (15 downto 0)
+	 result : out STD_LOGIC_VECTOR (15 downto 0);
+	 overflow : out STD_LOGIC;
+	 done : out STD_LOGIC
 	 );
 end circuito;
 
@@ -35,7 +37,8 @@ architecture Behavioral of circuito is
 		  X2_select1 : out  STD_LOGIC_VECTOR (1 downto 0);
 		  X2_select2 : out  STD_LOGIC_VECTOR (1 downto 0);
 		  adder_select : out  STD_LOGIC;
-		  adder_control : out STD_LOGIC
+		  adder_control : out STD_LOGIC;
+		  done : out STD_LOGIC
       );
   end component;
   component datapath
@@ -57,14 +60,15 @@ architecture Behavioral of circuito is
 		  g : in STD_LOGIC_VECTOR (15 downto 0);
 		  h : in STD_LOGIC_VECTOR (15 downto 0);
 		  i : in STD_LOGIC_VECTOR (15 downto 0);
-		  result : out  STD_LOGIC_VECTOR (15 downto 0)
+		  result : out  STD_LOGIC_VECTOR (15 downto 0);
+		  overflow : out STD_LOGIC
       );
   end component;
 
   signal RS1_enable, adder_select, adder_control : std_logic;
   signal X1_select1, X1_select2, X2_select1, X2_select2 : std_logic_vector(1 downto 0);
-  
   signal control_reg : std_logic_vector (10 downto 0);
+  signal control_done, aux_done : std_logic;
 
 begin
   inst_control: control port map(
@@ -77,7 +81,8 @@ begin
 	 X2_select1 => X2_select1,
 	 X2_select2 => X2_select2,
 	 adder_select => adder_select,
-	 adder_control => adder_control
+	 adder_control => adder_control,
+	 done => aux_done
     );
 	 
 	process (clk)
@@ -85,18 +90,19 @@ begin
 		if clk'event and clk='1' then
 			control_reg <= RS1_enable & adder_select & adder_control 
 								& X1_select1 & X1_select2 & X2_select1 & X2_select2;
+			control_done <= aux_done;
 		end if;
 	end process;
 	 
   inst_datapath: datapath port map(
     clk => clk,
-    RS1_enable => control_reg(0),
-	 adder_select => control_reg(1),
-	 adder_control => control_reg(2),
-    X1_select1 => control_reg(4 downto 3),
-	 X1_select2 => control_reg(6 downto 5),
-	 X2_select1 => control_reg(8 downto 7),
-	 X2_select2 => control_reg(10 downto 9),
+    RS1_enable => control_reg(10),
+	 adder_select => control_reg(9),
+	 adder_control => control_reg(8),
+    X1_select1 => control_reg(7 downto 6),
+	 X1_select2 => control_reg(5 downto 4),
+	 X2_select1 => control_reg(3 downto 2),
+	 X2_select2 => control_reg(1 downto 0),
 	 a => a,
 	 b => b,
 	 c => c,
@@ -106,8 +112,11 @@ begin
 	 g => g,
 	 h => h,
 	 i => i,
-	 result => result
+	 result => result,
+	 overflow => overflow
     );
-
+	 
+	done <= control_done;
+	
 end Behavioral;
 
