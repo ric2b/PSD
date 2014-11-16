@@ -54,7 +54,6 @@ ARCHITECTURE behavior OF circuito_tb IS
          h : IN  std_logic_vector(15 downto 0);
          i : IN  std_logic_vector(15 downto 0);
          result : OUT  std_logic_vector(15 downto 0);
-         overflow : OUT  std_logic;
          done : OUT  std_logic
         );
     END COMPONENT;
@@ -76,7 +75,6 @@ ARCHITECTURE behavior OF circuito_tb IS
 
  	--Outputs
    signal result : std_logic_vector(15 downto 0);
-   signal overflow : std_logic;
    signal done : std_logic;
 
    -- Clock period definitions
@@ -99,7 +97,6 @@ BEGIN
           h => h,
           i => i,
           result => result,
-          overflow => overflow,
           done => done
         );
 
@@ -134,45 +131,12 @@ BEGIN
 		i <= X"0001" after 0 ns; -- 1
 --		 resultado esperado : (-1)
 		
---		a <= X"7FFF" after 0 ns; -- 32767
---		b <= X"8AD0" after 0 ns; -- (-30000)
---		c <= X"0000" after 0 ns; -- 0
---		d <= X"FFFE" after 0 ns; -- (-2)
---		e <= X"7780" after 0 ns; -- 30592
---		f <= X"8620" after 0 ns; -- (-31200)
---		g <= X"006D" after 0 ns; -- 109
---		h <= X"FA22" after 0 ns; -- (-1502)
---		i <= X"737B" after 0 ns; -- 29563
-		
---		a <= X"7FFF" after 10*clk_period; -- 32767
---		b <= X"8AD0" after 10*clk_period; -- (-30000)
---		c <= X"0000" after 10*clk_period; -- 0
---		d <= X"FFFE" after 10*clk_period; -- (-2)
---		e <= X"7780" after 10*clk_period; -- 30592
---		f <= X"8620" after 10*clk_period; -- (-31200)
---		g <= X"006D" after 10*clk_period; -- 109
---		h <= X"FA22" after 10*clk_period; -- (-1502)
---		i <= X"737B" after 10*clk_period; -- 29563
---		 resultado esperado sem overflow: 7072 
---		 resultado esperado com overflow: X
-				
---				a <= X"4E20"; 
---				b <= X"0E10"; 
---				c <= X"1770"; 
---				d <= X"2328"; 
---				e <= X"2710"; 
---				f <= X"2320"; 
---				g <= X"157C"; 
---				h <= X"7530"; 
---				i <= X"1838"; 
-		-- resultado esperado : 16... 	
-		
-		start <= '0' after 0 ns;
-		start <= '1' after 20 ns;
---		start <= '1' after clk_period;
---		start <= '0' after clk_period * 2;
---		start <= '1' after clk_period * 10;
---		start <= '0' after clk_period * 11;
+		start <= '0';
+		wait for clk_period;
+		start <= '1';
+		wait for 2*clk_period;
+		start <= '0';
+
       wait;
    end process;
 

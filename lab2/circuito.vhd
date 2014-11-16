@@ -21,7 +21,6 @@ entity circuito is
 	 h : in STD_LOGIC_VECTOR (15 downto 0);
 	 i : in STD_LOGIC_VECTOR (15 downto 0);
 	 result : out STD_LOGIC_VECTOR (15 downto 0);
-	 overflow : out STD_LOGIC;
 	 done : out STD_LOGIC
 	 );
 end circuito;
@@ -66,8 +65,7 @@ architecture Behavioral of circuito is
 		  g : in STD_LOGIC_VECTOR (15 downto 0);
 		  h : in STD_LOGIC_VECTOR (15 downto 0);
 		  i : in STD_LOGIC_VECTOR (15 downto 0);
-		  result : out  STD_LOGIC_VECTOR (15 downto 0);
-		  overflow : out STD_LOGIC
+		  result : out  STD_LOGIC_VECTOR (15 downto 0)
       );
   end component;
 
@@ -125,8 +123,7 @@ begin
 	 g => g,
 	 h => h,
 	 i => i,
-	 result => result,
-	 overflow => overflow
+	 result => result
     );
 	 
 	done <= control_done;

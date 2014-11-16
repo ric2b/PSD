@@ -69,12 +69,12 @@ begin
 	 RA2_enable <= '0';
 	 RX1_enable <= '0';
 	 RX2_enable <= '0';
-    X1_select1 <= "XX";
-	 X1_select2 <= "XX";
-	 X2_select1 <= "XX";
-	 X2_select2 <= "XX";
-	 adder_select <= 'X';
-	 adder_control <= 'X';
+	 X1_select1 <= "00"; 
+	 X1_select2 <= "11"; 
+	 X2_select1 <= "11"; 
+	 X2_select2 <= "10"; 
+	 adder_select <= '1'; 
+	 adder_control <= '0';
 	 done <= '0';
 	 
     case currstate is
@@ -83,10 +83,6 @@ begin
 				done <= '0';
 				nextstate <= cycle_1;
 			end if;
-			RA1_enable <= '0';
-			RA2_enable <= '0';
-			RX1_enable <= '0';
-			RX2_enable <= '0';
 		        
       when cycle_1 =>
 			nextstate <= cycle_2;
@@ -98,7 +94,6 @@ begin
 			X1_select2 <= "00";
 			X2_select1 <= "01";
 			X2_select2 <= "01";
-			done <= '0';
  
 		when cycle_2 =>
 			nextstate <= cycle_3;
@@ -112,7 +107,6 @@ begin
 			X2_select2 <= "00";
 			adder_select <= '0';
 			adder_control <= '1';
-			done <= '0';
 		
       when cycle_3 =>
 			nextstate <= cycle_4;
@@ -126,12 +120,11 @@ begin
 			X2_select2 <= "00";
 			adder_select <= '0';
 			adder_control <= '1';
-			done <= '0';
         
       when cycle_4 =>
 			nextstate <= cycle_5;
-			RA1_enable <= '1';
-			RA2_enable <= '0';
+			RA1_enable <= '0';
+			RA2_enable <= '1';
 			RX1_enable <= '1';
 			RX2_enable <= '1';
 			X1_select1 <= "00";
@@ -140,36 +133,31 @@ begin
 			X2_select2 <= "11";
 			adder_select <= '0';
 			adder_control <= '1';
-			done <= '0';
 
 		when cycle_5 =>
 			nextstate <= cycle_6;
 			RA1_enable <= '1';
 			RA2_enable <= '0';
-			RX1_enable <= '1';
+			RX1_enable <= '0';
 			RX2_enable <= '1';
 			X2_select1 <= "11";
 			X2_select2 <= "10";
 			adder_select <= '0';
 			adder_control <= '1';
-			done <= '0';
 		  
 		when cycle_6 =>
 			nextstate <= s_end;
-			RA1_enable <= '1';
-			RA2_enable <= '0';
+			RA1_enable <= '0';
+			RA2_enable <= '1';
 			RX1_enable <= '0';
 			RX2_enable <= '0';
 			adder_select <= '1';
 			adder_control <= '0';
-			done <= '0';
+			done <= '1';
 			
 		when s_end =>
+			nextstate <= s_initial;
 			done <= '1';
-			RA1_enable <= '0';
-			RA2_enable <= '0';
-			RX1_enable <= '0';
-			RX2_enable <= '0';
 			
     end case;
   end process;

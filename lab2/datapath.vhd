@@ -52,17 +52,14 @@ entity datapath is
 			  g : in STD_LOGIC_VECTOR (15 downto 0);
 			  h : in STD_LOGIC_VECTOR (15 downto 0);
 			  i : in STD_LOGIC_VECTOR (15 downto 0);
-           result : out  STD_LOGIC_VECTOR (15 downto 0);
-			  overflow : out STD_LOGIC
+           result : out  STD_LOGIC_VECTOR (15 downto 0)
 			  );			 
 end datapath;
 
 architecture Behavioral of datapath is
 	signal x1_input1, x1_input2, x2_input1, x2_input2, adder_input1, adder_input2 : std_logic_vector (15 downto 0) := (others => '0');
-	signal adder_out : std_logic_vector (16 downto 0) := (others => '0');
+	signal adder_out : std_logic_vector (15 downto 0) := (others => '0');
 	signal x1_out, x2_out : std_logic_vector (31 downto 0):= (others => '0');
---	signal adder_overflow, x1_overflow, x2_overflow : std_logic := '0';
---	signal regO : std_logic := '0'; --register for overflow --
 	signal reg1_input, reg2_input, regX1_input, regX2_input : std_logic_vector (15 downto 0) := (others => '0');
 	signal reg1, reg2, regX1, regX2 : std_logic_vector (15 downto 0) := (others => '0');
 begin
@@ -99,12 +96,31 @@ begin
 						 b when "11",
 						 "0000000000000000" when others;
 						 
-	-- Mux Adder --
+	-- Mux Adder input 1--
 	with adder_select select
 		adder_input1 <= regX1 when '0',
 							 reg1 when '1',
 							 "0000000000000000" when others;
-						 
+	-- adder input 2 --			
+	adder_input2 <= regX2;
+	
+	-- Multiplier X1 --
+	x1_out <= x1_input1 * x1_input2;
+							
+	-- Multiplier X2 --
+	x2_out <= x2_input1 * x2_input2;
+	
+	-- Adder/Subtractor --
+	with adder_control select
+		adder_out <= adder_input1 + adder_input2 when '0',
+						 adder_input1 - adder_input2 when '1',
+						 b"0000000000000000" when others;
+	
+	-- registers inputs
+	reg1_input <= adder_out;
+	reg2_input <= adder_out;
+	regX1_input <= x1_out(15 downto 0);
+	regX2_input <= x2_out(15 downto 0);
 	
 	-- Register R1 --
 	process (clk)
@@ -138,44 +154,8 @@ begin
 		end if;
 	end process;
 	
-	-- Multiplier X1 --
-	x1_out <= x1_input1 * x1_input2;
---	with x1_out(31 downto 15) select
---		x1_overflow <= '0' when "00000000000000000",
---							'0' when "11111111111111111",
---							'1' when others;
-							
-	-- Multiplier X2 --
-	x2_out <= x2_input1 * x2_input2;
---	with x2_out(31 downto 15) select
---		x2_overflow <= '0' when "00000000000000000",
---							'0' when "11111111111111111",
---							'1' when others;
-	
-	-- Adder/Subtractor --
-	adder_input2 <= regX2;
-	with adder_control select
-		adder_out <= (adder_input1(15)&adder_input1) + (adder_input2(15)&adder_input2) when '0',
-						 (adder_input1(15)&adder_input1) - (adder_input2(15)&adder_input2) when '1',
-						 b"00000000000000000" when others;
---	adder_overflow <= adder_out(16) xor adder_out(15);
-	
-	reg1_input <= adder_out(15 downto 0);
-	reg2_input <= adder_out(15 downto 0);
-	regX1_input <= x1_out(15 downto 0);
-	regX2_input <= x2_out(15 downto 0);
-	
-	-- overflow register --
---	process (clk)
---	begin
---		if clk'event and clk='1' then
---			regO <= adder_overflow or x1_overflow or x2_overflow;
---		end if;
---	end process;
-	
-	overflow <= '0';
---	result <= reg1; -- saida ligado ao registo
-	result <= adder_out(15 downto 0); -- saida ligada a ALU
+--	result <= reg1; -- saida ligada ao registo
+	result <= adder_out; -- saida ligada a ALU
 	
 end Behavioral;
 
