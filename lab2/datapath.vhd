@@ -33,12 +33,15 @@ use IEEE.STD_LOGIC_SIGNED.ALL;
 
 entity datapath is
     Port ( clk : in STD_LOGIC;
-			  RS1_enable : in  STD_LOGIC;
-           X1_select1 : in  STD_LOGIC_VECTOR (1 downto 0);
-           X1_select2 : in  STD_LOGIC_VECTOR (1 downto 0);
-           X2_select1 : in  STD_LOGIC_VECTOR (1 downto 0);
-           X2_select2 : in  STD_LOGIC_VECTOR (1 downto 0);
-           adder_select : in  STD_LOGIC;
+			  RA1_enable : in STD_LOGIC;
+			  RA2_enable : in STD_LOGIC;
+			  RX1_enable : in STD_LOGIC;
+			  RX2_enable : in STD_LOGIC;
+           X1_select1 : in STD_LOGIC_VECTOR (1 downto 0);
+           X1_select2 : in STD_LOGIC_VECTOR (1 downto 0);
+           X2_select1 : in STD_LOGIC_VECTOR (1 downto 0);
+           X2_select2 : in STD_LOGIC_VECTOR (1 downto 0);
+           adder_select : in STD_LOGIC;
 			  adder_control : in STD_LOGIC;
            a : in STD_LOGIC_VECTOR (15 downto 0);
 			  b : in STD_LOGIC_VECTOR (15 downto 0);
@@ -58,8 +61,8 @@ architecture Behavioral of datapath is
 	signal x1_input1, x1_input2, x2_input1, x2_input2, adder_input1, adder_input2 : std_logic_vector (15 downto 0) := (others => '0');
 	signal adder_out : std_logic_vector (16 downto 0) := (others => '0');
 	signal x1_out, x2_out : std_logic_vector (31 downto 0):= (others => '0');
-	signal adder_overflow, x1_overflow, x2_overflow : std_logic := '0';
-	signal regO : std_logic := '0'; --register for overflow --
+--	signal adder_overflow, x1_overflow, x2_overflow : std_logic := '0';
+--	signal regO : std_logic := '0'; --register for overflow --
 	signal reg1_input, reg2_input, regX1_input, regX2_input : std_logic_vector (15 downto 0) := (others => '0');
 	signal reg1, reg2, regX1, regX2 : std_logic_vector (15 downto 0) := (others => '0');
 begin
@@ -106,7 +109,7 @@ begin
 	-- Register R1 --
 	process (clk)
 	begin
-		if clk'event and clk='1' and RS1_enable='1' then
+		if clk'event and clk='1' and RA1_enable='1' then
 			reg1 <= reg1_input;
 		end if;
 	end process;
@@ -114,7 +117,7 @@ begin
 	-- Register R2 --
 	process (clk)
 	begin
-		if clk'event and clk='1' then
+		if clk'event and clk='1' and RA2_enable='1' then
 			reg2 <= reg2_input;
 		end if;
 	end process;
@@ -122,7 +125,7 @@ begin
 	-- Register RX1 --
 	process (clk)
 	begin
-		if clk'event and clk='1' then
+		if clk'event and clk='1' and RX1_enable='1' then
 			regX1 <= regX1_input;
 		end if;
 	end process;
@@ -130,24 +133,24 @@ begin
 	-- Register RX2 --
 	process (clk)
 	begin
-		if clk'event and clk='1' then
+		if clk'event and clk='1' and RX2_enable='1' then
 			regX2 <= regX2_input;
 		end if;
 	end process;
 	
 	-- Multiplier X1 --
 	x1_out <= x1_input1 * x1_input2;
-	with x1_out(31 downto 15) select
-		x1_overflow <= '0' when "00000000000000000",
-							'0' when "11111111111111111",
-							'1' when others;
+--	with x1_out(31 downto 15) select
+--		x1_overflow <= '0' when "00000000000000000",
+--							'0' when "11111111111111111",
+--							'1' when others;
 							
 	-- Multiplier X2 --
 	x2_out <= x2_input1 * x2_input2;
-	with x2_out(31 downto 15) select
-		x2_overflow <= '0' when "00000000000000000",
-							'0' when "11111111111111111",
-							'1' when others;
+--	with x2_out(31 downto 15) select
+--		x2_overflow <= '0' when "00000000000000000",
+--							'0' when "11111111111111111",
+--							'1' when others;
 	
 	-- Adder/Subtractor --
 	adder_input2 <= regX2;
@@ -155,7 +158,7 @@ begin
 		adder_out <= (adder_input1(15)&adder_input1) + (adder_input2(15)&adder_input2) when '0',
 						 (adder_input1(15)&adder_input1) - (adder_input2(15)&adder_input2) when '1',
 						 b"00000000000000000" when others;
-	adder_overflow <= adder_out(16) xor adder_out(15);
+--	adder_overflow <= adder_out(16) xor adder_out(15);
 	
 	reg1_input <= adder_out(15 downto 0);
 	reg2_input <= adder_out(15 downto 0);
@@ -163,15 +166,16 @@ begin
 	regX2_input <= x2_out(15 downto 0);
 	
 	-- overflow register --
-	process (clk)
-	begin
-		if clk'event and clk='1' then
-			regO <= adder_overflow or x1_overflow or x2_overflow;
-		end if;
-	end process;
+--	process (clk)
+--	begin
+--		if clk'event and clk='1' then
+--			regO <= adder_overflow or x1_overflow or x2_overflow;
+--		end if;
+--	end process;
 	
-	overflow <= regO;
-	result <= reg1;
+	overflow <= '0';
+--	result <= reg1; -- saida ligado ao registo
+	result <= adder_out(15 downto 0); -- saida ligada a ALU
 	
 end Behavioral;
 

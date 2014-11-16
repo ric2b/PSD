@@ -32,7 +32,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity Control is
     Port ( start : in  STD_LOGIC;
 			  clk, rst : in STD_LOGIC;
-           RS1_enable : out  STD_LOGIC;
+			  RA1_enable : out STD_LOGIC;
+			  RA2_enable : out STD_LOGIC;
+			  RX1_enable : out STD_LOGIC;
+			  RX2_enable : out STD_LOGIC;
            X1_select1 : out  STD_LOGIC_VECTOR (1 downto 0);
            X1_select2 : out  STD_LOGIC_VECTOR (1 downto 0);
            X2_select1 : out  STD_LOGIC_VECTOR (1 downto 0);
@@ -62,7 +65,10 @@ begin
     nextstate <= currstate ;  
     -- by default, does not change the state.
     
-	 RS1_enable <= '0';
+	 RA1_enable <= '0';
+	 RA2_enable <= '0';
+	 RX1_enable <= '0';
+	 RX2_enable <= '0';
     X1_select1 <= "XX";
 	 X1_select2 <= "XX";
 	 X2_select1 <= "XX";
@@ -77,10 +83,17 @@ begin
 				done <= '0';
 				nextstate <= cycle_1;
 			end if;
-			RS1_enable <= '0';
+			RA1_enable <= '0';
+			RA2_enable <= '0';
+			RX1_enable <= '0';
+			RX2_enable <= '0';
 		        
       when cycle_1 =>
 			nextstate <= cycle_2;
+			RA1_enable <= '0';
+			RA2_enable <= '0';
+			RX1_enable <= '1';
+			RX2_enable <= '1';
 			X1_select1 <= "11";
 			X1_select2 <= "00";
 			X2_select1 <= "01";
@@ -89,7 +102,10 @@ begin
  
 		when cycle_2 =>
 			nextstate <= cycle_3;
-			RS1_enable <= '1';
+			RA1_enable <= '1';
+			RA2_enable <= '0';
+			RX1_enable <= '1';
+			RX2_enable <= '1';
 			X1_select1 <= "11";
 			X1_select2 <= "10";
 			X2_select1 <= "01";
@@ -100,7 +116,10 @@ begin
 		
       when cycle_3 =>
 			nextstate <= cycle_4;
-			RS1_enable <= '0';
+			RA1_enable <= '0';
+			RA2_enable <= '1';
+			RX1_enable <= '1';
+			RX2_enable <= '1';
 			X1_select1 <= "01";
 			X1_select2 <= "10";	
 			X2_select1 <= "00";
@@ -111,7 +130,10 @@ begin
         
       when cycle_4 =>
 			nextstate <= cycle_5;
-			RS1_enable <= '1';
+			RA1_enable <= '1';
+			RA2_enable <= '0';
+			RX1_enable <= '1';
+			RX2_enable <= '1';
 			X1_select1 <= "00";
 			X1_select2 <= "11";
 			X2_select1 <= "11";
@@ -122,7 +144,10 @@ begin
 
 		when cycle_5 =>
 			nextstate <= cycle_6;
-			RS1_enable <= '1';
+			RA1_enable <= '1';
+			RA2_enable <= '0';
+			RX1_enable <= '1';
+			RX2_enable <= '1';
 			X2_select1 <= "11";
 			X2_select2 <= "10";
 			adder_select <= '0';
@@ -131,14 +156,20 @@ begin
 		  
 		when cycle_6 =>
 			nextstate <= s_end;
-			RS1_enable <= '1';
+			RA1_enable <= '1';
+			RA2_enable <= '0';
+			RX1_enable <= '0';
+			RX2_enable <= '0';
 			adder_select <= '1';
 			adder_control <= '0';
 			done <= '0';
 			
 		when s_end =>
 			done <= '1';
-			RS1_enable <= '0';
+			RA1_enable <= '0';
+			RA2_enable <= '0';
+			RX1_enable <= '0';
+			RX2_enable <= '0';
 			
     end case;
   end process;
