@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   14:38:52 12/03/2014
+-- Create Date:   16:04:15 12/09/2014
 -- Design Name:   
--- Module Name:   /home/david/Documents/roberto/usb2bram_tb.vhd
+-- Module Name:   /home/david/Documents/roberto/t_tb.vhd
 -- Project Name:  roberto
 -- Target Device:  
 -- Tool versions:  
@@ -32,10 +32,10 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY usb2bram_tb IS
-END usb2bram_tb;
+ENTITY t_tb IS
+END t_tb;
  
-ARCHITECTURE behavior OF usb2bram_tb IS 
+ARCHITECTURE behavior OF t_tb IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
@@ -44,8 +44,13 @@ ARCHITECTURE behavior OF usb2bram_tb IS
          start : IN  std_logic;
          rst : IN  std_logic;
          clk : IN  std_logic;
-         ram_out : OUT  std_logic_vector(31 downto 0);
-         output : OUT  std_logic_vector(127 downto 0)
+         done : OUT  std_logic;
+         regR10_out : OUT  std_logic_vector(31 downto 0);
+         regR11_out : OUT  std_logic_vector(31 downto 0);
+         regR12_out : OUT  std_logic_vector(31 downto 0);
+         regR1_out : OUT  std_logic_vector(127 downto 0);
+			regR2_out : out std_logic_vector(127 downto 0);
+         addrOut : OUT  std_logic_vector(8 downto 0)
         );
     END COMPONENT;
     
@@ -56,8 +61,13 @@ ARCHITECTURE behavior OF usb2bram_tb IS
    signal clk : std_logic := '0';
 
  	--Outputs
-   signal ram_out : std_logic_vector(31 downto 0);
-   signal output : std_logic_vector(127 downto 0);
+   signal done : std_logic;
+   signal regR10_out : std_logic_vector(31 downto 0);
+   signal regR11_out : std_logic_vector(31 downto 0);
+   signal regR12_out : std_logic_vector(31 downto 0);
+   signal regR1_out : std_logic_vector(127 downto 0);
+	signal regR2_out : std_logic_vector(127 downto 0);
+   signal addrOut : std_logic_vector(8 downto 0);
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -69,8 +79,13 @@ BEGIN
           start => start,
           rst => rst,
           clk => clk,
-          ram_out => ram_out,
-          output => output
+          done => done,
+          regR10_out => regR10_out,
+          regR11_out => regR11_out,
+          regR12_out => regR12_out,
+          regR1_out => regR1_out,
+			 regR2_out => regR2_out,
+          addrOut => addrOut
         );
 
    -- Clock process definitions
@@ -92,9 +107,11 @@ BEGIN
       wait for clk_period*10;
 
       -- insert stimulus here 
-		start <= '1' after 0 ns;
-		start <= '0' after 20 ns;
 		
+		rst <= '1' after 0 ns;
+		rst <= '0' after 20 ns;
+		start <= '1' after 0 ns;
+
       wait;
    end process;
 

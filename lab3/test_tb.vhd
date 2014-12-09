@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   14:38:52 12/03/2014
+-- Create Date:   14:50:51 12/03/2014
 -- Design Name:   
--- Module Name:   /home/david/Documents/roberto/usb2bram_tb.vhd
+-- Module Name:   /home/david/Documents/roberto/test_tb.vhd
 -- Project Name:  roberto
 -- Target Device:  
 -- Tool versions:  
@@ -32,10 +32,10 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY usb2bram_tb IS
-END usb2bram_tb;
+ENTITY test_tb IS
+END test_tb;
  
-ARCHITECTURE behavior OF usb2bram_tb IS 
+ARCHITECTURE behavior OF test_tb IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
@@ -56,6 +56,7 @@ ARCHITECTURE behavior OF usb2bram_tb IS
    signal clk : std_logic := '0';
 
  	--Outputs
+   signal countOut : std_logic_vector(8 downto 0);
    signal ram_out : std_logic_vector(31 downto 0);
    signal output : std_logic_vector(127 downto 0);
 
@@ -69,6 +70,7 @@ BEGIN
           start => start,
           rst => rst,
           clk => clk,
+          countOut => countOut,
           ram_out => ram_out,
           output => output
         );
@@ -92,8 +94,9 @@ BEGIN
       wait for clk_period*10;
 
       -- insert stimulus here 
+		rst <= '1' after 0 ns;
+		rst <= '0' after 20 ns;
 		start <= '1' after 0 ns;
-		start <= '0' after 20 ns;
 		
       wait;
    end process;

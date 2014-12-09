@@ -6,12 +6,14 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity usb2bram is
 	port( 
 		start, rst, clk : in std_logic;
-		regW_out : out std_logic_vector(127 downto 0);
-		regMR_out : out std_logic_vector(31 downto 0);
-		regMW_out : out std_logic_vector(31 downto 0);
-		addrOut : out std_logic_vector(8 downto 0);
-		ram_out : out std_logic_vector(31 downto 0);
-		output : out std_logic_vector(127 downto 0)
+		done : out std_logic;
+		
+		regR10_out : out std_logic_vector(31 downto 0);
+		regR11_out : out std_logic_vector(31 downto 0);
+		regR12_out : out std_logic_vector(31 downto 0);
+		regR1_out : out std_logic_vector(127 downto 0);
+		regR2_out : out std_logic_vector(127 downto 0);
+		addrOut : out std_logic_vector(8 downto 0)
 	);
 end usb2bram;
 
@@ -27,14 +29,10 @@ architecture Structural of usb2bram is
 	signal ctlEnB, ctlWeB : std_logic;
 	
 	signal datain : std_logic_vector (31 downto 0);
-
-	signal enRegR : std_logic;
-	signal regR_select : std_logic_vector(1 downto 0);
-	signal enRegW : std_logic;
-	signal enRegMR : std_logic;
-	signal enRegMW : std_logic;
-		
-	signal regControl : std_logic_vector(5 downto 0);
+	signal enRegR1: std_logic_vector (2 downto 0);
+	signal enRegR2: std_logic;
+	
+	signal regControl : std_logic_vector(3 downto 0) := (others => '0');
 	
 	-- component declarations  
 	component BlockRam
@@ -56,39 +54,34 @@ architecture Structural of usb2bram is
 	
 	component datapath
 		Port(
-			clk, rst : in std_logic;
-			enRegR : in std_logic;
-			regR_select : in std_logic_vector(1 downto 0);
-			enRegW : in std_logic;
-			regW_out : out std_logic_vector(127 downto 0);
-			enRegMR : in std_logic;
-			regMR_out : out std_logic_vector(31 downto 0);
-			enRegMW : in std_logic;
-			regMW_out : out std_logic_vector(31 downto 0);
-			datain : in  std_logic_vector (31 downto 0);
-			dataout : out  std_logic_vector (127 downto 0)
+			rst, clk : in std_logic;
+			enRegR1 : in std_logic_vector(2 downto 0);
+			enRegR2 : in std_logic;
+			regR10_out : out std_logic_vector(31 downto 0);
+			regR11_out : out std_logic_vector(31 downto 0);
+			regR12_out : out std_logic_vector(31 downto 0);
+			regR1_out : out std_logic_vector(127 downto 0);
+			regR2_out : out std_logic_vector(127 downto 0);
+			
+			datain : in  std_logic_vector (31 downto 0)
 		);
 	end component;
 	
 	component controlo
 		Port ( 
 			start, clk, rst : in  std_logic;
+			done : out std_logic;
 			-- bits de controlo do porto A
 			adrA : out std_logic_vector(10 downto 0);
-			busDiA : out std_logic_vector(7 downto 0);
 			ctlEnA : out std_logic;
 			ctlWeA : out std_logic;
 			-- bits de controlo do porto B
 			adrB : out std_logic_vector(8 downto 0);
-			busDiB : out std_logic_vector(31 downto 0);
 			ctlEnB : out std_logic;
 			ctlWeB : out std_logic;
 			
-			enRegR : out std_logic;
-			regR_select : out std_logic_vector(1 downto 0);
-			enRegW : out std_logic;
-			enRegMR : out std_logic;
-			enRegMW : out std_logic
+			enRegR1 : out std_logic_vector(2 downto 0); -- enables dos registos de leitura --
+			enRegR2 : out std_logic
 		);
 	end component;
 	
@@ -112,46 +105,39 @@ begin
 	Inst_datapath: datapath port map(
 		clk => clk,
 		rst => rst,
-		enRegR => regControl(0),
-		regR_select => regControl (2 downto 1),
-		enRegW => regControl(3),
-		regW_out => regW_out,
-		enRegMR => regControl(4),
-		regMR_out => regMR_out,
-		enRegMW => regControl(5),
-		regMW_out => regMW_out,
-		datain => datain,
-		dataout => output
+		enRegR1=> regControl(2 downto 0),
+		enRegR2 => regControl(3),
+		regR10_out => regR10_out,
+		regR11_out => regR11_out,
+		regR12_out => regR12_out,
+		regR1_out => regR1_out,
+		regR2_out => regR2_out,
+		datain => datain
 	);
 	
-	-- registo de controlo entre a UC e a datapath--
+	-- registo de controlo --
 	process(clk)
 	begin
 		if clk'event and clk='1' then
-			regControl <= enRegMW & enRegMR & enRegW & regR_select & enRegR;
+			regControl <= enRegR2 & enRegR1;
 		end if;
 	end process;
 	
 	Inst_controlo: controlo port map(
 		start => start, 
 		clk => clk, 
-		rst => rst,
+		rst => rst, 
+		done => done,
 		adrA => adrA,
-		busDiA => busDiA,
 		ctlEnA => ctlEnA,
 		ctlWeA => ctlWeA,
 		adrB => adrB,
-		busDiB => busDiB,
 		ctlEnB => ctlEnB,
 		ctlWeB => ctlWeB,
-		enRegR => enRegR,
-		regR_select => regR_select,
-		enRegW => enRegW,
-		enRegMR => enRegMR,
-		enRegMW => enRegMW
+		enRegR1 => enRegR1,
+		enRegR2 => enRegR2
 	);
 	
 	addrOut <= adrB;
-	ram_out <= datain;
 	
 end Structural;
