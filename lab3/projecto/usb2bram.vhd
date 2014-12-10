@@ -26,13 +26,17 @@ architecture Structural of usb2bram is
 	signal adrA_in : std_logic_vector(10 downto 0) := (others => '0');
 	signal busDiA_in : std_logic_vector(7 downto 0) := (others => '0');
 	signal ctlEnA_in, ctlWeA_in : std_logic := '0';
+	signal adrA_out : std_logic_vector(10 downto 0) := (others => '0');
+	signal busDiA_out : std_logic_vector(7 downto 0) := (others => '0');
+	signal ctlEnA_out, ctlWeA_out : std_logic := '0';
 
 	-- bits de controlo do porto B de M_in
 	signal adrB_in 		: std_logic_vector(8 downto 0) := (others => '0');
 	signal busDiB_in, busDoB_in 	: std_logic_vector(31 downto 0) := (others => '0');
 	signal ctlEnB_in	: std_logic := '0';
 	signal ctlWeB_in 	: std_logic := '0';
-	signal adrB_out 		: std_logic_vector(8 downto 0) := (others => '0');
+	-- bits de controlo do porto B de M_out
+	signal adrB_out 	: std_logic_vector(8 downto 0) := (others => '0');
 	signal busDiB_out, busDoB_out 	: std_logic_vector(31 downto 0) := (others => '0');
 	signal ctlEnB_out	: std_logic := '0';
 	signal ctlWeB_out 	: std_logic := '0';
@@ -48,7 +52,24 @@ architecture Structural of usb2bram is
 	signal regControl : std_logic_vector(7 downto 0) := (others => '0');
 	
 	-- component declarations  
-	component BlockRam
+	component BlockRam_In
+		port( 
+			ctlWeA : in    std_logic; 
+			busDiA : in    std_logic_vector (7 downto 0); 
+			busDoA : out   std_logic_vector (7 downto 0); 
+			adrA   : in    std_logic_vector (10 downto 0); 
+			ctlEnA : in    std_logic; 
+			clkA   : in    std_logic; 
+			ctlWeB : in    std_logic; 
+			busDiB : in    std_logic_vector (31 downto 0); 
+			busDoB : out   std_logic_vector (31 downto 0); 
+			adrB   : in    std_logic_vector (8 downto 0); 
+			ctlEnB : in    std_logic; 
+			clkB   : in    std_logic
+		);	
+	end component;
+	
+	component BlockRam_Out
 		port( 
 			ctlWeA : in    std_logic; 
 			busDiA : in    std_logic_vector (7 downto 0); 
@@ -106,7 +127,7 @@ architecture Structural of usb2bram is
 	
 begin
 	-- component instantiations
-	Inst_BlockRam : BlockRam port map (
+	Inst_BlockRam_In : BlockRam port map (
 		adrA   => adrA_in,
 		adrB   => adrB_in,
 		busDiA => busDiA_in,
@@ -119,6 +140,21 @@ begin
 		ctlWeB => ctlWeB_in,
 		busDoA => open,
 		busDoB => busDoB_in
+	);
+	
+	Inst_BlockRam_Out : BlockRam port map (
+		adrA   => adrA_out,
+		adrB   => adrB_out,
+		busDiA => busDiA_out,
+		busDiB => busDiB_out,
+		clkA   => clk,
+		clkB   => clk,
+		ctlEnA => ctlEnA_out,
+		ctlEnB => ctlEnB_out,
+		ctlWeA => ctlWeA_out,
+		ctlWeB => ctlWeB_out,
+		busDoA => open,
+		busDoB => busDoB_out
 	);
 
 	Inst_datapath: datapath port map(
@@ -135,10 +171,10 @@ begin
 		regRiprev_out => regRiprev_out,
 		regRicurr_out => regRicurr_out,
 		regRinext_out => regRinext_out,
-		regRres_out	=> regRres_out,
+		regRres_out	=> busDiB_out,
 		datain => busDoB_in
 	);
-
+	
 	-- registo de controlo entre a UC e a datapath--
 	process(clk)
 	begin
