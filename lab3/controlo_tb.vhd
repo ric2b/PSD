@@ -2,10 +2,10 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   14:52:15 12/03/2014
+-- Create Date:   18:07:15 12/10/2014
 -- Design Name:   
--- Module Name:   /home/david/Documents/roberto/controlo_tb.vhd
--- Project Name:  roberto
+-- Module Name:   /home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P3/PSD/Imagens/controlo_tb.vhd
+-- Project Name:  Imagens
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
@@ -44,16 +44,20 @@ ARCHITECTURE behavior OF controlo_tb IS
          start : IN  std_logic;
          clk : IN  std_logic;
          rst : IN  std_logic;
-         adrA : OUT  std_logic_vector(10 downto 0);
-         busDiA : OUT  std_logic_vector(7 downto 0);
-         ctlEnA : OUT  std_logic;
-         ctlWeA : OUT  std_logic;
-         adrB : OUT  std_logic_vector(8 downto 0);
-         busDiB : OUT  std_logic_vector(31 downto 0);
-         ctlEnB : OUT  std_logic;
-         ctlWeB : OUT  std_logic;
-         countOut : OUT  std_logic_vector(8 downto 0);
-         enRegR : OUT  std_logic_vector(1 downto 0)
+         adrB_in : OUT  std_logic_vector(8 downto 0);
+         busDiB_in : OUT  std_logic_vector(31 downto 0);
+         ctlEnB_in : OUT  std_logic;
+         ctlWeB_in : OUT  std_logic;
+         adrB_out : OUT  std_logic_vector(8 downto 0);
+         busDiB_out : OUT  std_logic_vector(31 downto 0);
+         ctlEnB_out : OUT  std_logic;
+         ctlWeB_out : OUT  std_logic;
+         regRin_en : OUT  std_logic_vector(2 downto 0);
+         regRiprev_en : OUT  std_logic;
+         regRicurr_en : OUT  std_logic;
+         regRinext_en : OUT  std_logic;
+         mux1_select : OUT  std_logic;
+         regRres_en : OUT  std_logic
         );
     END COMPONENT;
     
@@ -64,16 +68,20 @@ ARCHITECTURE behavior OF controlo_tb IS
    signal rst : std_logic := '0';
 
  	--Outputs
-   signal adrA : std_logic_vector(10 downto 0);
-   signal busDiA : std_logic_vector(7 downto 0);
-   signal ctlEnA : std_logic;
-   signal ctlWeA : std_logic;
-   signal adrB : std_logic_vector(8 downto 0);
-   signal busDiB : std_logic_vector(31 downto 0);
-   signal ctlEnB : std_logic;
-   signal ctlWeB : std_logic;
-   signal countOut : std_logic_vector(8 downto 0);
-   signal enRegR : std_logic_vector(1 downto 0);
+   signal adrB_in : std_logic_vector(8 downto 0);
+   signal busDiB_in : std_logic_vector(31 downto 0);
+   signal ctlEnB_in : std_logic;
+   signal ctlWeB_in : std_logic;
+   signal adrB_out : std_logic_vector(8 downto 0);
+   signal busDiB_out : std_logic_vector(31 downto 0);
+   signal ctlEnB_out : std_logic;
+   signal ctlWeB_out : std_logic;
+   signal regRin_en : std_logic_vector(2 downto 0);
+   signal regRiprev_en : std_logic;
+   signal regRicurr_en : std_logic;
+   signal regRinext_en : std_logic;
+   signal mux1_select : std_logic;
+   signal regRres_en : std_logic;
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -85,16 +93,20 @@ BEGIN
           start => start,
           clk => clk,
           rst => rst,
-          adrA => adrA,
-          busDiA => busDiA,
-          ctlEnA => ctlEnA,
-          ctlWeA => ctlWeA,
-          adrB => adrB,
-          busDiB => busDiB,
-          ctlEnB => ctlEnB,
-          ctlWeB => ctlWeB,
-          countOut => countOut,
-          enRegR => enRegR
+          adrB_in => adrB_in,
+          busDiB_in => busDiB_in,
+          ctlEnB_in => ctlEnB_in,
+          ctlWeB_in => ctlWeB_in,
+          adrB_out => adrB_out,
+          busDiB_out => busDiB_out,
+          ctlEnB_out => ctlEnB_out,
+          ctlWeB_out => ctlWeB_out,
+          regRin_en => regRin_en,
+          regRiprev_en => regRiprev_en,
+          regRicurr_en => regRicurr_en,
+          regRinext_en => regRinext_en,
+          mux1_select => mux1_select,
+          regRres_en => regRres_en
         );
 
    -- Clock process definitions
@@ -117,8 +129,8 @@ BEGIN
 
       -- insert stimulus here 
 		rst <= '1' after 0 ns;
-		rst <= '0' after 20 ns;
-		start <= '1' after 0 ns;
+		rst <= '0' after clk_period;
+		start <= '1' after 2*clk_period;
 		
       wait;
    end process;

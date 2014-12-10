@@ -1,25 +1,3 @@
---------------------------------------------------------------------------------
--- Company: Digilent Inc.
--- Engineer: Mircea Dabacan
---
--- Create Date:    12:04:37 08/18/06
--- Design Name:    Digital Scope
--- Module Name:    BlockRam - Structural
--- Project Name:   
--- Target Device:  
--- Tool versions:  
--- Description:
---   The BlockRam component simply instantiates a 2kX8bit Block RAM,
---   disabling the Set/Reset inputs and Parity bits.
---   The Block Ram content is initialized to all zeros.
---
--- Dependencies:
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
---------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
@@ -67,7 +45,7 @@ begin
       SIM_COLLISION_CHECK => "ALL", -- "NONE", "WARNING", "GENERATE_X_ONLY", "ALL" 
       -- The following INIT_xx declarations specify the initial contents of the RAM
       -- Port A Address 0 to 511, Port B Address 0 to 127
-      INIT_00 => X"0000000000000000000000000000000000000001000000010000000100000001",
+      INIT_00 => X"0000000000000000000000000000000000000001000000010000000100000111",
       INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
       INIT_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
       INIT_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
