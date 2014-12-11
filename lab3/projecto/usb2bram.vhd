@@ -52,24 +52,7 @@ architecture Structural of usb2bram is
 	signal regControl : std_logic_vector(7 downto 0) := (others => '0');
 	
 	-- component declarations  
-	component BlockRam_In
-		port( 
-			ctlWeA : in    std_logic; 
-			busDiA : in    std_logic_vector (7 downto 0); 
-			busDoA : out   std_logic_vector (7 downto 0); 
-			adrA   : in    std_logic_vector (10 downto 0); 
-			ctlEnA : in    std_logic; 
-			clkA   : in    std_logic; 
-			ctlWeB : in    std_logic; 
-			busDiB : in    std_logic_vector (31 downto 0); 
-			busDoB : out   std_logic_vector (31 downto 0); 
-			adrB   : in    std_logic_vector (8 downto 0); 
-			ctlEnB : in    std_logic; 
-			clkB   : in    std_logic
-		);	
-	end component;
-	
-	component BlockRam_Out
+	component BlockRam
 		port( 
 			ctlWeA : in    std_logic; 
 			busDiA : in    std_logic_vector (7 downto 0); 
@@ -101,7 +84,8 @@ architecture Structural of usb2bram is
 			regRicurr_out	: out std_logic_vector(127 downto 0);
 			regRinext_out	: out std_logic_vector(127 downto 0);
 			regRres_out		: out std_logic_vector(127 downto 0);
-			datain 			: in  std_logic_vector (31 downto 0)
+			datain 			: in  std_logic_vector (31 downto 0);
+			dataout 			: out  std_logic_vector (31 downto 0)
 		);
 	end component;
 	
@@ -171,8 +155,9 @@ begin
 		regRiprev_out => regRiprev_out,
 		regRicurr_out => regRicurr_out,
 		regRinext_out => regRinext_out,
-		regRres_out	=> busDiB_out,
-		datain => busDoB_in
+		regRres_out	=> regRres_out,
+		datain => busDoB_in,
+		dataout => busDiB_out
 	);
 	
 	-- registo de controlo entre a UC e a datapath--

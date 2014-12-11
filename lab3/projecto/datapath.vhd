@@ -29,7 +29,8 @@ entity datapath is
 		regRres_out		: out std_logic_vector(127 downto 0);
 
 		-- entradas e saidas das memorias --
-		datain 			: in  std_logic_vector (31 downto 0)
+		datain 			: in  std_logic_vector (31 downto 0);
+		dataout 			: out  std_logic_vector (31 downto 0)
 	);
 end datapath;
 
@@ -186,6 +187,14 @@ begin
 	regRicurr_out <= regRicurr;
 	regRinext_out <= regRinext;
 	regRres_out	  <= regRres;
+	
+	-- mux para o dataout
+	with MW_addr(1 downto 0) select
+		dataout <=  regRres(127 downto 96) when "00",
+						regRres(95 downto 64) when "01",
+						regRres(63 downto 32) when "10",
+						regRres(31 downto 0) when "11",
+						X"00000000" when others;
 	
 end Behavioral;
 
