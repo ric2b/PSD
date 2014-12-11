@@ -92,12 +92,12 @@ begin
 		enCount <= '0';
 	
 		case currstate is
-			when s_initial =>
+			when s_initial => -- começa o processamento se o sinal start ficar a high
 				if start='1' then
 					nextstate <= s_first ;
 				end if;
 			
-			when s_first =>
+			when s_first => -- preencher regRiprev com 'oper'. depois, passar ao processamento
 				if endRow='1' then
 					nextstate <= s_process;
 				else
@@ -112,7 +112,7 @@ begin
 				regRicurr_en <= '1';
 				regRinext_en <= '1';
 
-			when s_process =>
+			when s_process => -- lê a próxima linha e faz os cálculos da linha actual (regRicurr). Se já leu todas as linhas, passar ao caso especial da última linha (s_last0)
 				if endCount='1' then
 					nextstate <= s_last0;
 				else
@@ -123,7 +123,7 @@ begin
 				adrB_in <= count;
 				regRin_en <= '1' & count(1 downto 0);
 
-				if count(1 downto 0)="00" then
+				if count(1 downto 0)="00" then -- fazer shift das 3 linhas actuais nos registos
 					regRiprev_en <= '1';
 					regRicurr_en <= '1';
 					regRinext_en <= '1';
@@ -131,13 +131,13 @@ begin
 					regRres_en <= '1';
 				end if;
 			
-			when s_last0 =>
+			when s_last0 => -- ler a última linha 
 				nextstate <= s_last1;
 				regRiprev_en <= '1';
 				regRicurr_en <= '1';
 				regRinext_en <= '1';
 
-			when s_last1 =>
+			when s_last1 => -- preencher regRinext com OPER, processar a última linha e escrever a penúltima na saída
 				nextstate <= s_last2;
 				mux1_select <= '1';
 				regRiprev_en <= '1';
@@ -145,11 +145,11 @@ begin
 				regRinext_en <= '1';
 				regRres_en <= '1';
 
-			when s_last2 =>
+			when s_last2 => -- terminou o processamento, escreve na saída a última linha
 				nextstate <= s_end;
 				regRres_en <= '1';				
 
-			when s_end =>
+			when s_end => -- terminou a execução, idle
 			
 		end case;
 	end process;
