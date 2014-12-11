@@ -37,18 +37,20 @@ end controlo;
 
 architecture Behavioral of controlo is
 	-- state machine signals --
-	type fsm_states is ( s_initial, s_end, s_first, s_last0, s_last1, s_last2, s_process);
+	type fsm_states is ( s_initial, s_first, s_process, s_last, s_end);
 	signal currstate, nextstate : fsm_states;
 	
 	-- counter signals --
-	signal count : std_logic_vector (8 downto 0); --tem que ter o mesmo tamanho do endereco do porto B
-	signal enCount, endCount, endRow : std_logic;
-	constant countEND : std_logic_vector (8 downto 0) := "000001111";
-	constant rowEND : std_logic_vector (1 downto 0) := "11";
+	signal count : std_logic_vector (9 downto 0); --tem que ter o mesmo tamanho do endereco do porto B
+	signal enCount, endCount, endRow, endLast : std_logic;
+	constant countEND : std_logic_vector (9 downto 0) := "1000000011"; 	-- determina quando termina a contagem (512 enderecos + 4) - 1 = 515
+	constant rowEND : std_logic_vector (1 downto 0) := "11";			-- determina quando termina uma linha
+	constant lastEND : std_logic_vector (9 downto 0) := "0000000101";	-- determina uma contagem de seis para o estado s_last terminar apos 6 ciclos
   
 begin
 	endCount <= '1' when count = countEND else '0';
 	endRow <= '1' when count(1 downto 0) = rowEND else '0';
+	endLast <= '1' when count = lastEND else '0';
 	process (clk, rst) 
 	begin
 		if rst='1' then 
@@ -57,6 +59,8 @@ begin
 			if enCount='1' then
 				if endCount = '0' then
 					count <= count + 1;
+				else
+					count <= (others => '0');		-- reiniciar o contador quando ele termina a contagem
 				end if;
 			end if;
 		end if;
@@ -105,7 +109,7 @@ begin
 				end if;
 				enCount <= '1';
 				ctlEnB_in <= '1';
-				adrB_in <= count;
+				adrB_in <= count(8 downto 0);
 				regRin_en <= '1' & count(1 downto 0);
 				mux1_select <= '1';
 				regRiprev_en <= '1';
@@ -114,13 +118,13 @@ begin
 
 			when s_process =>
 				if endCount='1' then
-					nextstate <= s_last0;
+					nextstate <= s_last;
 				else
 					nextstate <= s_process;
 				end if;
 				enCount <= '1';
 				ctlEnB_in <= '1';
-				adrB_in <= count;
+				adrB_in <= count(8 downto 0);
 				regRin_en <= '1' & count(1 downto 0);
 
 				if count(1 downto 0)="00" then
@@ -131,23 +135,27 @@ begin
 					regRres_en <= '1';
 				end if;
 			
-			when s_last0 =>
-				nextstate <= s_last1;
-				regRiprev_en <= '1';
-				regRicurr_en <= '1';
-				regRinext_en <= '1';
+			when s_last =>
+				if endLast = '1' then
+					nextstate <= s_end;
+				else
+					nextstate <= s_last;
+				end if;
 
-			when s_last1 =>
-				nextstate <= s_last2;
-				mux1_select <= '1';
-				regRiprev_en <= '1';
-				regRicurr_en <= '1';
-				regRinext_en <= '1';
-				regRres_en <= '1';
+				-- count = 0 ; primeiro ciclo --
+				if count = "0000000000" then
+					-- carregar linha de 'oper' --
+					mux1_select <= '1';
+					regRiprev_en <= '1';
+					regRicurr_en <= '1';
+					regRinext_en <= '1';
+				end if;
 
-			when s_last2 =>
-				nextstate <= s_end;
-				regRres_en <= '1';				
+				-- count = 1 ; segundo ciclo --
+				if count = "0000000001" then
+					-- guardar resultado da ultima linha --
+					regRres_en <= '1';
+				end if;
 
 			when s_end =>
 			

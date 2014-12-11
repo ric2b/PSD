@@ -32,7 +32,7 @@ architecture Structural of usb2bram is
 	signal busDiB_in, busDoB_in 	: std_logic_vector(31 downto 0) := (others => '0');
 	signal ctlEnB_in	: std_logic := '0';
 	signal ctlWeB_in 	: std_logic := '0';
-	signal adrB_out 		: std_logic_vector(8 downto 0) := (others => '0');
+	signal adrB_out 	: std_logic_vector(8 downto 0) := (others => '0');
 	signal busDiB_out, busDoB_out 	: std_logic_vector(31 downto 0) := (others => '0');
 	signal ctlEnB_out	: std_logic := '0';
 	signal ctlWeB_out 	: std_logic := '0';
