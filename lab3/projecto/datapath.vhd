@@ -20,6 +20,7 @@ entity datapath is
 		regRinext_en	: in std_logic;						-- enable do registo Ri+1
 		mux1_select		: in std_logic;						-- select do mux 1 que seleciona a entrada de Ri+1
 		regRres_en		: in std_logic;						-- enable do registo que guarda o resultado
+		selectMuxOut 	: in std_logic_vector(1 downto 0);						-- select do mux de saida do resultado
 
 		-- saidas dos registos --
 		regRin_out 		: out std_logic_vector(127 downto 0);
@@ -29,7 +30,8 @@ entity datapath is
 		regRres_out		: out std_logic_vector(127 downto 0);
 
 		-- entradas e saidas das memorias --
-		datain 			: in  std_logic_vector (31 downto 0)
+		datain 			: in  std_logic_vector (31 downto 0);
+		dataout 			: out  std_logic_vector (31 downto 0)
 	);
 end datapath;
 
@@ -186,6 +188,14 @@ begin
 	regRicurr_out <= regRicurr;
 	regRinext_out <= regRinext;
 	regRres_out	  <= regRres;
+	
+	-- mux para o dataout
+	with selectMuxOut select
+		dataout <=  regRres(127 downto 96) when "00",
+									regRres(95 downto 64) when "01",
+									regRres(63 downto 32) when "10",
+									regRres(31 downto 0) when "11",
+									X"00000000" when others;
 	
 end Behavioral;
 

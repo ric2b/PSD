@@ -26,12 +26,17 @@ architecture Structural of usb2bram is
 	signal adrA_in : std_logic_vector(10 downto 0) := (others => '0');
 	signal busDiA_in : std_logic_vector(7 downto 0) := (others => '0');
 	signal ctlEnA_in, ctlWeA_in : std_logic := '0';
+	signal adrA_out : std_logic_vector(10 downto 0) := (others => '0');
+	signal busDiA_out : std_logic_vector(7 downto 0) := (others => '0');
+	signal ctlEnA_out, ctlWeA_out : std_logic := '0';
 
 	-- bits de controlo do porto B de M_in
 	signal adrB_in 		: std_logic_vector(8 downto 0) := (others => '0');
 	signal busDiB_in, busDoB_in 	: std_logic_vector(31 downto 0) := (others => '0');
 	signal ctlEnB_in	: std_logic := '0';
 	signal ctlWeB_in 	: std_logic := '0';
+
+	-- bits de controlo do porto B de M_out
 	signal adrB_out 	: std_logic_vector(8 downto 0) := (others => '0');
 	signal busDiB_out, busDoB_out 	: std_logic_vector(31 downto 0) := (others => '0');
 	signal ctlEnB_out	: std_logic := '0';
@@ -44,8 +49,9 @@ architecture Structural of usb2bram is
 	signal regRinext_en	: std_logic := '0';
 	signal mux1_select	: std_logic := '0';
 	signal regRres_en	: std_logic := '0';
+	signal selectMuxOut : std_logic_vector(1 downto 0) := (others => '0');
 		
-	signal regControl : std_logic_vector(7 downto 0) := (others => '0');
+	signal regControl : std_logic_vector(9 downto 0) := (others => '0');
 	
 	-- component declarations  
 	component BlockRam
@@ -75,12 +81,14 @@ architecture Structural of usb2bram is
 			regRinext_en	: in std_logic;						-- enable do registo Ri+1
 			mux1_select		: in std_logic;						-- select do mux 1 que seleciona a entrada de Ri+1
 			regRres_en		: in std_logic;						-- enable do registo que guarda o resultado
+			selectMuxOut 	: in std_logic_vector(1 downto 0);						-- select do mux de saida do resultado
 			regRin_out 		: out std_logic_vector(127 downto 0);
 			regRiprev_out	: out std_logic_vector(127 downto 0);
 			regRicurr_out	: out std_logic_vector(127 downto 0);
 			regRinext_out	: out std_logic_vector(127 downto 0);
 			regRres_out		: out std_logic_vector(127 downto 0);
-			datain 			: in  std_logic_vector (31 downto 0)
+			datain 			: in  std_logic_vector (31 downto 0);
+			dataout 			: out  std_logic_vector (31 downto 0)
 		);
 	end component;
 	
@@ -88,11 +96,9 @@ architecture Structural of usb2bram is
 		Port ( 
 			start, clk, rst : in  std_logic;
 			adrB_in 		: out std_logic_vector(8 downto 0);
-			busDiB_in 		: out std_logic_vector(31 downto 0);
 			ctlEnB_in 		: out std_logic;
 			ctlWeB_in 		: out std_logic;
 			adrB_out 		: out std_logic_vector(8 downto 0);
-			busDiB_out 		: out std_logic_vector(31 downto 0);
 			ctlEnB_out 		: out std_logic;
 			ctlWeB_out 		: out std_logic;
 			regRin_en 		: out std_logic_vector(2 downto 0);		-- enables dos registos de entrada
@@ -106,7 +112,7 @@ architecture Structural of usb2bram is
 	
 begin
 	-- component instantiations
-	Inst_BlockRam : BlockRam port map (
+	Inst_BlockRam_In : BlockRam port map (
 		adrA   => adrA_in,
 		adrB   => adrB_in,
 		busDiA => busDiA_in,
@@ -120,6 +126,21 @@ begin
 		busDoA => open,
 		busDoB => busDoB_in
 	);
+	
+	Inst_BlockRam_Out : BlockRam port map (
+		adrA   => adrA_out,
+		adrB   => adrB_out,
+		busDiA => busDiA_out,
+		busDiB => busDiB_out,
+		clkA   => clk,
+		clkB   => clk,
+		ctlEnA => ctlEnA_out,
+		ctlEnB => ctlEnB_out,
+		ctlWeA => ctlWeA_out,
+		ctlWeB => ctlWeB_out,
+		busDoA => open,
+		busDoB => busDoB_out
+	);
 
 	Inst_datapath: datapath port map(
 		clk => clk,
@@ -131,19 +152,21 @@ begin
 		regRinext_en => regControl(5),
 		mux1_select => regControl(6),
 		regRres_en => regControl(7),
+		selectMuxOut 	=> regControl(9 downto 8),
 		regRin_out => regRin_out,
 		regRiprev_out => regRiprev_out,
 		regRicurr_out => regRicurr_out,
 		regRinext_out => regRinext_out,
 		regRres_out	=> regRres_out,
-		datain => busDoB_in
+		datain => busDoB_in,
+		dataout => busDiB_out
 	);
-
+	
 	-- registo de controlo entre a UC e a datapath--
 	process(clk)
 	begin
 		if clk'event and clk='1' then
-			regControl <= regRres_en & mux1_select & regRinext_en & regRicurr_en & regRiprev_en & regRin_en;
+			regControl <= selectMuxOut & regRres_en & mux1_select & regRinext_en & regRicurr_en & regRiprev_en & regRin_en;
 		end if;
 	end process;
 	
@@ -152,11 +175,9 @@ begin
 		clk => clk, 
 		rst => rst,
 		adrB_out => adrB_out,
-		busDiB_out => busDiB_out,
 		ctlEnB_out => ctlEnB_out,
 		ctlWeB_out => ctlWeB_out,
 		adrB_in => adrB_in,
-		busDiB_in => busDiB_in,
 		ctlEnB_in => ctlEnB_in,
 		ctlWeB_in => ctlWeB_in,
 		regRin_en => regRin_en,

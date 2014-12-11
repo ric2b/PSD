@@ -14,13 +14,11 @@ entity controlo is
 
 		-- bits de controlo do porto B de MR
 		adrB_in 		: out std_logic_vector(8 downto 0);
-		busDiB_in 		: out std_logic_vector(31 downto 0);
 		ctlEnB_in 		: out std_logic;
 		ctlWeB_in 		: out std_logic;
 		
 		-- bits de controlo do porto B de MW
 		adrB_out 		: out std_logic_vector(8 downto 0);
-		busDiB_out 		: out std_logic_vector(31 downto 0);
 		ctlEnB_out 		: out std_logic;
 		ctlWeB_out 		: out std_logic;
 
@@ -80,11 +78,9 @@ begin
 		nextstate <= currstate ;  -- by default, does not change the state.
 		-- default values --
 		adrB_in <= "000000000";
-		busDiB_in <= X"10000000";
 		ctlEnB_in <= '0';
 		ctlWeB_in <= '0';
 		adrB_out <= "000000000";
-		busDiB_out <= X"10000000";
 		ctlEnB_out <= '0';
 		ctlWeB_out <= '0';
 		regRin_en <= "000";
@@ -96,12 +92,12 @@ begin
 		enCount <= '0';
 	
 		case currstate is
-			when s_initial =>
+			when s_initial => -- começa o processamento se o sinal start ficar a high
 				if start='1' then
 					nextstate <= s_first ;
 				end if;
 			
-			when s_first =>
+			when s_first => -- preencher regRiprev com 'oper'. depois, passar ao processamento
 				if endRow='1' then
 					nextstate <= s_process;
 				else
@@ -116,7 +112,7 @@ begin
 				regRicurr_en <= '1';
 				regRinext_en <= '1';
 
-			when s_process =>
+			when s_process => -- lê a próxima linha e faz os cálculos da linha actual (regRicurr). Se já leu todas as linhas, passar ao caso especial da última linha (s_last0)
 				if endCount='1' then
 					nextstate <= s_last;
 				else
@@ -127,7 +123,7 @@ begin
 				adrB_in <= count(8 downto 0);
 				regRin_en <= '1' & count(1 downto 0);
 
-				if count(1 downto 0)="00" then
+				if count(1 downto 0)="00" then -- fazer shift das 3 linhas actuais nos registos
 					regRiprev_en <= '1';
 					regRicurr_en <= '1';
 					regRinext_en <= '1';
@@ -157,7 +153,7 @@ begin
 					regRres_en <= '1';
 				end if;
 
-			when s_end =>
+			when s_end => -- terminou a execução, idle
 			
 		end case;
 	end process;
