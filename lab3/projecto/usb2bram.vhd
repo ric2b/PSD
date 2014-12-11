@@ -49,9 +49,8 @@ architecture Structural of usb2bram is
 	signal regRinext_en	: std_logic := '0';
 	signal mux1_select	: std_logic := '0';
 	signal regRres_en	: std_logic := '0';
-	signal selectMuxOut : std_logic_vector(1 downto 0) := (others => '0');
 		
-	signal regControl : std_logic_vector(9 downto 0) := (others => '0');
+	signal regControl : std_logic_vector(16 downto 0) := (others => '0');
 	
 	-- component declarations  
 	component BlockRam
@@ -81,12 +80,13 @@ architecture Structural of usb2bram is
 			regRinext_en	: in std_logic;						-- enable do registo Ri+1
 			mux1_select		: in std_logic;						-- select do mux 1 que seleciona a entrada de Ri+1
 			regRres_en		: in std_logic;						-- enable do registo que guarda o resultado
-			selectMuxOut 	: in std_logic_vector(1 downto 0);						-- select do mux de saida do resultado
 			regRin_out 		: out std_logic_vector(127 downto 0);
 			regRiprev_out	: out std_logic_vector(127 downto 0);
 			regRicurr_out	: out std_logic_vector(127 downto 0);
 			regRinext_out	: out std_logic_vector(127 downto 0);
 			regRres_out		: out std_logic_vector(127 downto 0);
+			adrB_in			: in std_logic_vector(8 downto 0);
+			adrB_out			: out std_logic_vector(8 downto 0);
 			datain 			: in  std_logic_vector (31 downto 0);
 			dataout 			: out  std_logic_vector (31 downto 0)
 		);
@@ -98,7 +98,6 @@ architecture Structural of usb2bram is
 			adrB_in 		: out std_logic_vector(8 downto 0);
 			ctlEnB_in 		: out std_logic;
 			ctlWeB_in 		: out std_logic;
-			adrB_out 		: out std_logic_vector(8 downto 0);
 			ctlEnB_out 		: out std_logic;
 			ctlWeB_out 		: out std_logic;
 			regRin_en 		: out std_logic_vector(2 downto 0);		-- enables dos registos de entrada
@@ -152,12 +151,13 @@ begin
 		regRinext_en => regControl(5),
 		mux1_select => regControl(6),
 		regRres_en => regControl(7),
-		selectMuxOut 	=> regControl(9 downto 8),
 		regRin_out => regRin_out,
 		regRiprev_out => regRiprev_out,
 		regRicurr_out => regRicurr_out,
 		regRinext_out => regRinext_out,
 		regRres_out	=> regRres_out,
+		adrB_in => regControl(16 downto 8),
+		adrB_out	=> adrB_out,
 		datain => busDoB_in,
 		dataout => busDiB_out
 	);
@@ -166,7 +166,7 @@ begin
 	process(clk)
 	begin
 		if clk'event and clk='1' then
-			regControl <= selectMuxOut & regRres_en & mux1_select & regRinext_en & regRicurr_en & regRiprev_en & regRin_en;
+			regControl <= adrB_in & regRres_en & mux1_select & regRinext_en & regRicurr_en & regRiprev_en & regRin_en;
 		end if;
 	end process;
 	
@@ -174,7 +174,6 @@ begin
 		start => start, 
 		clk => clk, 
 		rst => rst,
-		adrB_out => adrB_out,
 		ctlEnB_out => ctlEnB_out,
 		ctlWeB_out => ctlWeB_out,
 		adrB_in => adrB_in,

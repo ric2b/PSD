@@ -18,7 +18,6 @@ entity controlo is
 		ctlWeB_in 		: out std_logic;
 		
 		-- bits de controlo do porto B de MW
-		adrB_out 		: out std_logic_vector(8 downto 0);
 		ctlEnB_out 		: out std_logic;
 		ctlWeB_out 		: out std_logic;
 
@@ -44,7 +43,7 @@ architecture Behavioral of controlo is
 	constant countEND : std_logic_vector (9 downto 0) := "1000000011"; 	-- determina quando termina a contagem (512 enderecos + 4) - 1 = 515
 	constant rowEND : std_logic_vector (1 downto 0) := "11";			-- determina quando termina uma linha
 	constant lastEND : std_logic_vector (9 downto 0) := "0000000101";	-- determina uma contagem de seis para o estado s_last terminar apos 6 ciclos
-  
+
 begin
 	endCount <= '1' when count = countEND else '0';
 	endRow <= '1' when count(1 downto 0) = rowEND else '0';
@@ -73,16 +72,15 @@ begin
 		end if;
 	end process;
 
-	state_comb: process (currstate, start, count, endCount, endRow)
+	state_comb: process (currstate, start, count, endCount, endRow, endLast)
 	begin  --  process
 		nextstate <= currstate ;  -- by default, does not change the state.
 		-- default values --
 		adrB_in <= "000000000";
-		ctlEnB_in <= '0';
+		ctlEnB_in <= '1';
 		ctlWeB_in <= '0';
-		adrB_out <= "000000000";
-		ctlEnB_out <= '0';
-		ctlWeB_out <= '0';
+		ctlEnB_out <= '1';
+		ctlWeB_out <= '1';
 		regRin_en <= "000";
 		regRiprev_en <= '0';
 		regRicurr_en <= '0';
