@@ -211,8 +211,8 @@ begin
 	end generate logic;
 
 	with oper select
-		regRres_in <= logic_out_dil when '1'
-					  logic_out_dil when '0'
+		regRres_in <= logic_out_dil when '0',
+					  logic_out_ero when '1',
 					  X"00000000000000000000000000000000" when others;
 
 
