@@ -168,7 +168,7 @@ begin
 	end process;
 
 	-- extensao do sinal oper --
-	oper_extend <= X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" when oper='1' else X"00000000000000000000000000000000";
+	oper_extend <= X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" when oper='0' else X"00000000000000000000000000000000";
 	-- Mux 1 --
 	regRinext_in <= oper_extend when mux1_select = '1' else regRin;
 
@@ -212,7 +212,7 @@ begin
 
 	with oper select
 		regRres_in <= logic_out_dil when '1'
-					  logic_out_dil when '0'
+					  logic_out_ero when '0'
 					  X"00000000000000000000000000000000" when others;
 
 
