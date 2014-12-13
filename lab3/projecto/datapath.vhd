@@ -54,7 +54,8 @@ architecture Behavioral of datapath is
 	
 	-- logica --
 	signal oper_extend	: std_logic_vector(127 downto 0);
-	signal logic_out 	: std_logic_vector(127 downto 0);
+	signal logic_out_dil: std_logic_vector(127 downto 0);
+	signal logic_out_ero: std_logic_vector(127 downto 0);
 
 	-- entradas --
 	signal regRinext_in	: std_logic_vector(127 downto 0);
@@ -180,27 +181,40 @@ begin
 	begin
 		left: if (k = 0) generate
 		begin
-			logic_out(k) <= regRiprev(k) or regRiprev(k+1) or 
-							 regRicurr(k+1) or regRicurr(k) or 
-							 regRinext(k) or regRinext(k+1);
+			logic_out_dil(k) <= regRiprev(k) or regRiprev(k+1) or 
+							 	regRicurr(k+1) or regRicurr(k) or 
+							 	regRinext(k) or regRinext(k+1);
+			logic_out_ero(k) <= regRiprev(k) and regRiprev(k+1) and 
+							 	regRicurr(k+1) and regRicurr(k) and 
+							 	regRinext(k) and regRinext(k+1);
 		end generate left;
 
 		middle: if (k > 0) and (k < 127) generate
 		begin
-			logic_out(k) <= regRiprev(k-1) or regRiprev(k) or regRiprev(k+1) or 
-							 regRicurr(k-1) or regRicurr(k) or regRicurr(k+1) or
-							 regRinext(k-1) or regRinext(k) or regRinext(k+1);
+			logic_out_dil(k) <= regRiprev(k-1) or regRiprev(k) or regRiprev(k+1) or 
+							 	regRicurr(k-1) or regRicurr(k) or regRicurr(k+1) or
+							 	regRinext(k-1) or regRinext(k) or regRinext(k+1);
+			logic_out_ero(k) <= regRiprev(k-1) and regRiprev(k) and regRiprev(k+1) and 
+							 	regRicurr(k-1) and regRicurr(k) and regRicurr(k+1) and
+							 	regRinext(k-1) and regRinext(k) and regRinext(k+1);
 		end generate middle;
 
 		right: if (k = 127) generate
 		begin
-			logic_out(k) <= regRiprev(k-1) or regRiprev(k) or 
-							 regRicurr(k-1) or regRicurr(k) or 
-							 regRinext(k-1) or regRinext(k);
+			logic_out_dil(k) <= regRiprev(k-1) or regRiprev(k) or 
+							 	regRicurr(k-1) or regRicurr(k) or 
+							 	regRinext(k-1) or regRinext(k);
+			logic_out_ero(k) <= regRiprev(k-1) and regRiprev(k) and 
+							 	regRicurr(k-1) and regRicurr(k) and 
+							 	regRinext(k-1) and regRinext(k);
 		end generate right;
 	end generate logic;
 
-	regRres_in <= logic_out;
+	with oper select
+		regRres_in <= logic_out_dil when '1'
+					  logic_out_dil when '0'
+					  X"00000000000000000000000000000000" when others;
+
 
 	-- registo com o resultado --
 	process(clk)
