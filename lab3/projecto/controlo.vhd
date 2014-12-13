@@ -151,8 +151,9 @@ begin
 					enRegResult <= '1';
 				end if;
 
-			when s_end => -- terminou a execuo, idle
-			
+			when s_end => -- terminou a execucaoo, idle
+				writeEnBMemWrite0 <= '0';
+				
 		end case;
 	end process;
 	
