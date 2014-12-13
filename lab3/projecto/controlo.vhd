@@ -12,22 +12,22 @@ entity controlo is
 	Port (
 		start, clk, rst : in  std_logic;
 
-		-- bits de controlo do porto B de MR
-		adrB_in 		: out std_logic_vector(8 downto 0);
-		ctlEnB_in 		: out std_logic;
-		ctlWeB_in 		: out std_logic;
+		-- bits de controlo da memoria de leitura --
+		adrBMemRead		: out std_logic_vector(8 downto 0);
+		enBMemRead 		: out std_logic;
+		writeEnBMemRead : out std_logic;
 		
-		-- bits de controlo do porto B de MW
-		ctlEnB_out 		: out std_logic;
-		ctlWeB_out 		: out std_logic;
+		-- bits de controlo do porto B da memoria de escrita 0
+		enBMemWrite0 		: out std_logic;
+		writeEnBMemWrite0	: out std_logic;
 
 		-- enables e selects --
-		regRin_en 		: out std_logic_vector(2 downto 0);		-- enables dos registos de entrada
-		regRiprev_en	: out std_logic; 						-- enable do registo Ri-1
-		regRicurr_en	: out std_logic;						-- enable do registo Ri
-		regRinext_en	: out std_logic;						-- enable do registo Ri+1
-		mux1_select		: out std_logic;						-- select do mux 1 que seleciona a entrada de Ri+1
-		regRres_en		: out std_logic							-- enable do registo que guarda o resultado
+		enRegRead 		: out std_logic_vector(2 downto 0);		-- enables dos registos de leitura
+		enRegRiPrevious	: out std_logic; 						-- enable do registo Ri-1
+		enRegRiCurrent	: out std_logic;						-- enable do registo Ri
+		enRegRiNext		: out std_logic;						-- enable do registo Ri+1
+		selectMuxOper	: out std_logic;						-- select do mux que identifica a operacao a realizar
+		enRegResult		: out std_logic							-- enable do registo que guarda o resultado
 		
 	);
 end controlo;
@@ -76,21 +76,21 @@ begin
 	begin  --  process
 		nextstate <= currstate ;  -- by default, does not change the state.
 		-- default values --
-		adrB_in <= "000000000";
-		ctlEnB_in <= '1';
-		ctlWeB_in <= '0';
-		ctlEnB_out <= '1';
-		ctlWeB_out <= '1';
-		regRin_en <= "000";
-		regRiprev_en <= '0';
-		regRicurr_en <= '0';
-		regRinext_en <= '0';
-		mux1_select <= '0';
-		regRres_en <= '0';
+		adrBMemRead <= "000000000";
+		enBMemRead <= '1';
+		writeEnBMemRead <= '0';
+		enBMemWrite0 <= '1';
+		writeEnBMemWrite0 <= '1';
+		enRegRead <= "000";
+		enRegRiPrevious <= '0';
+		enRegRiCurrent <= '0';
+		enRegRiNext <= '0';
+		selectMuxOper <= '0';
+		enRegResult <= '0';
 		enCount <= '0';
 	
 		case currstate is
-			when s_initial => -- começa o processamento se o sinal start ficar a high
+			when s_initial => -- comea o processamento se o sinal start ficar a high
 				if start='1' then
 					nextstate <= s_first ;
 				end if;
@@ -102,31 +102,31 @@ begin
 					nextstate <= s_first;
 				end if;
 				enCount <= '1';
-				ctlEnB_in <= '1';
-				adrB_in <= count(8 downto 0);
-				regRin_en <= '1' & count(1 downto 0);
-				mux1_select <= '1';
-				regRiprev_en <= '1';
-				regRicurr_en <= '1';
-				regRinext_en <= '1';
+				enBMemRead <= '1';
+				adrBMemRead <= count(8 downto 0);
+				enRegRead <= '1' & count(1 downto 0);
+				selectMuxOper <= '1';
+				enRegRiPrevious <= '1';
+				enRegRiCurrent <= '1';
+				enRegRiNext <= '1';
 
-			when s_process => -- lê a próxima linha e faz os cálculos da linha actual (regRicurr). Se já leu todas as linhas, passar ao caso especial da última linha (s_last0)
+			when s_process => -- l a prxima linha e faz os clculos da linha actual (regRicurr). Se j leu todas as linhas, passar ao caso especial da ltima linha (s_last0)
 				if endCount='1' then
 					nextstate <= s_last;
 				else
 					nextstate <= s_process;
 				end if;
 				enCount <= '1';
-				ctlEnB_in <= '1';
-				adrB_in <= count(8 downto 0);
-				regRin_en <= '1' & count(1 downto 0);
+				enBMemRead <= '1';
+				adrBMemRead <= count(8 downto 0);
+				enRegRead <= '1' & count(1 downto 0);
 
 				if count(1 downto 0)="00" then -- fazer shift das 3 linhas actuais nos registos
-					regRiprev_en <= '1';
-					regRicurr_en <= '1';
-					regRinext_en <= '1';
+					enRegRiPrevious <= '1';
+					enRegRiCurrent <= '1';
+					enRegRiNext <= '1';
 				elsif count(1 downto 0)="01" then
-					regRres_en <= '1';
+					enRegResult <= '1';
 				end if;
 			
 			when s_last =>
@@ -139,19 +139,19 @@ begin
 				-- count = 0 ; primeiro ciclo --
 				if count = "0000000000" then
 					-- carregar linha de 'oper' --
-					mux1_select <= '1';
-					regRiprev_en <= '1';
-					regRicurr_en <= '1';
-					regRinext_en <= '1';
+					selectMuxOper <= '1';
+					enRegRiPrevious <= '1';
+					enRegRiCurrent <= '1';
+					enRegRiNext <= '1';
 				end if;
 
 				-- count = 1 ; segundo ciclo --
 				if count = "0000000001" then
 					-- guardar resultado da ultima linha --
-					regRres_en <= '1';
+					enRegResult <= '1';
 				end if;
 
-			when s_end => -- terminou a execução, idle
+			when s_end => -- terminou a execuo, idle
 			
 		end case;
 	end process;

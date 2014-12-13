@@ -2,7 +2,7 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   18:12:42 12/10/2014
+-- Create Date:   18:31:30 12/13/2014
 -- Design Name:   
 -- Module Name:   /home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P3/PSD/Imagens/usb2bram_tb.vhd
 -- Project Name:  Imagens
@@ -45,13 +45,13 @@ ARCHITECTURE behavior OF usb2bram_tb IS
          rst : IN  std_logic;
          clk : IN  std_logic;
          oper : IN  std_logic;
-         addrin_out : OUT  std_logic_vector(8 downto 0);
-         datain_out : OUT  std_logic_vector(31 downto 0);
-         regRin_out : OUT  std_logic_vector(127 downto 0);
-         regRiprev_out : OUT  std_logic_vector(127 downto 0);
-         regRicurr_out : OUT  std_logic_vector(127 downto 0);
-         regRinext_out : OUT  std_logic_vector(127 downto 0);
-         regRres_out : OUT  std_logic_vector(127 downto 0)
+         adrBMemRead_out : OUT  std_logic_vector(8 downto 0);
+         dataInBMemRead_out : OUT  std_logic_vector(31 downto 0);
+         regRead_out : OUT  std_logic_vector(127 downto 0);
+         regRiPrevious_out : OUT  std_logic_vector(127 downto 0);
+         regRiCurrent_out : OUT  std_logic_vector(127 downto 0);
+         regRiNext_out : OUT  std_logic_vector(127 downto 0);
+         regResult_out : OUT  std_logic_vector(127 downto 0)
         );
     END COMPONENT;
     
@@ -63,13 +63,13 @@ ARCHITECTURE behavior OF usb2bram_tb IS
    signal oper : std_logic := '0';
 
  	--Outputs
-   signal addrin_out : std_logic_vector(8 downto 0);
-   signal datain_out : std_logic_vector(31 downto 0);
-   signal regRin_out : std_logic_vector(127 downto 0);
-   signal regRiprev_out : std_logic_vector(127 downto 0);
-   signal regRicurr_out : std_logic_vector(127 downto 0);
-   signal regRinext_out : std_logic_vector(127 downto 0);
-   signal regRres_out : std_logic_vector(127 downto 0);
+   signal adrBMemRead_out : std_logic_vector(8 downto 0);
+   signal dataInBMemRead_out : std_logic_vector(31 downto 0);
+   signal regRead_out : std_logic_vector(127 downto 0);
+   signal regRiPrevious_out : std_logic_vector(127 downto 0);
+   signal regRiCurrent_out : std_logic_vector(127 downto 0);
+   signal regRiNext_out : std_logic_vector(127 downto 0);
+   signal regResult_out : std_logic_vector(127 downto 0);
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -82,13 +82,13 @@ BEGIN
           rst => rst,
           clk => clk,
           oper => oper,
-          addrin_out => addrin_out,
-          datain_out => datain_out,
-          regRin_out => regRin_out,
-          regRiprev_out => regRiprev_out,
-          regRicurr_out => regRicurr_out,
-          regRinext_out => regRinext_out,
-          regRres_out => regRres_out
+          adrBMemRead_out => adrBMemRead_out,
+          dataInBMemRead_out => dataInBMemRead_out,
+          regRead_out => regRead_out,
+          regRiPrevious_out => regRiPrevious_out,
+          regRiCurrent_out => regRiCurrent_out,
+          regRiNext_out => regRiNext_out,
+          regResult_out => regResult_out
         );
 
    -- Clock process definitions
