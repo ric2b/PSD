@@ -61,7 +61,7 @@ architecture Behavioral of datapath is
 	signal regRres_in	: std_logic_vector(127 downto 0);
 	
 	-- registos de atraso do contador --
-	type  delayArray is array (0 to 8) of std_logic_vector(8 downto 0); 
+	type  delayArray is array (0 to 12) of std_logic_vector(8 downto 0); 
 	signal counterDelay : delayArray;
 	
 	signal selectMuxOut 	:  std_logic_vector(1 downto 0);	-- select do mux de saida do resultado
@@ -76,7 +76,7 @@ begin
 		end if;
 	end process;
 	
-	delay: for k in 0 to 7 generate
+	delay: for k in 0 to 11 generate
 	begin
 		process(clk)
 		begin
@@ -86,7 +86,7 @@ begin
 		end process;
 	end generate delay;
 	
-	adrB_out <= counterDelay(8);
+	adrB_out <= counterDelay(12);
 	
 	-----------------------
 	--Registos de Entrada--
