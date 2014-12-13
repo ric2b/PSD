@@ -30,7 +30,7 @@ entity datapath is
 		
 		-- enderecos da memoria de escrita --
 		adrB_in			: in std_logic_vector(8 downto 0);
-		adrB_out			: out std_logic_vector(8 downto 0);
+		adrB_out		: out std_logic_vector(8 downto 0);
 
 		-- entradas e saidas das memorias --
 		datain 			: in  std_logic_vector (31 downto 0);
@@ -62,7 +62,7 @@ architecture Behavioral of datapath is
 	signal regRres_in	: std_logic_vector(127 downto 0);
 	
 	-- registos de atraso do contador --
-	type  delayArray is array (0 to 12) of std_logic_vector(8 downto 0); 
+	type  delayArray is array (0 to 9) of std_logic_vector(8 downto 0); 
 	signal counterDelay : delayArray;
 	
 	signal selectMuxOut 	:  std_logic_vector(1 downto 0);	-- select do mux de saida do resultado
@@ -77,7 +77,7 @@ begin
 		end if;
 	end process;
 	
-	delay: for k in 0 to 11 generate
+	delay: for k in 0 to 8 generate
 	begin
 		process(clk)
 		begin
@@ -87,7 +87,7 @@ begin
 		end process;
 	end generate delay;
 	
-	adrB_out <= counterDelay(12);
+	adrB_out <= counterDelay(9);
 	
 	-----------------------
 	--Registos de Entrada--
@@ -236,13 +236,13 @@ begin
 	regRres_out	  <= regRres;
 	
 	-- mux para o dataout
-	selectMuxOut <= counterDelay(8)(1 downto 0);
+	selectMuxOut <= counterDelay(9)(1 downto 0);
 	with selectMuxOut select
 		dataout <=  regRres(127 downto 96) when "00",
-						regRres(95 downto 64) when "01",
-						regRres(63 downto 32) when "10",
-						regRres(31 downto 0) when "11",
-						X"00000000" when others;
+					regRres(95 downto 64) when "01",
+					regRres(63 downto 32) when "10",
+					regRres(31 downto 0) when "11",
+					X"00000000" when others;
 	
 end Behavioral;
 
