@@ -11,7 +11,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity datapath is
 	Port ( 
 		rst, clk 		: in std_logic;
-		oper				: in std_logic;						-- (dilatacao = 0 / erosao = 1)
+		oper				: in std_logic;						-- (dilatacao = 1 / erosao = 0)
 
 		-- enables e selects --
 		regRin_en 		: in std_logic_vector(2 downto 0);	-- enables dos registos de entrada
@@ -184,6 +184,7 @@ begin
 			logic_out_dil(k) <= regRiprev(k) or regRiprev(k+1) or 
 							 	regRicurr(k+1) or regRicurr(k) or 
 							 	regRinext(k) or regRinext(k+1);
+			
 			logic_out_ero(k) <= regRiprev(k) and regRiprev(k+1) and 
 							 	regRicurr(k+1) and regRicurr(k) and 
 							 	regRinext(k) and regRinext(k+1);
@@ -194,6 +195,7 @@ begin
 			logic_out_dil(k) <= regRiprev(k-1) or regRiprev(k) or regRiprev(k+1) or 
 							 	regRicurr(k-1) or regRicurr(k) or regRicurr(k+1) or
 							 	regRinext(k-1) or regRinext(k) or regRinext(k+1);
+			
 			logic_out_ero(k) <= regRiprev(k-1) and regRiprev(k) and regRiprev(k+1) and 
 							 	regRicurr(k-1) and regRicurr(k) and regRicurr(k+1) and
 							 	regRinext(k-1) and regRinext(k) and regRinext(k+1);
@@ -204,6 +206,7 @@ begin
 			logic_out_dil(k) <= regRiprev(k-1) or regRiprev(k) or 
 							 	regRicurr(k-1) or regRicurr(k) or 
 							 	regRinext(k-1) or regRinext(k);
+			
 			logic_out_ero(k) <= regRiprev(k-1) and regRiprev(k) and 
 							 	regRicurr(k-1) and regRicurr(k) and 
 							 	regRinext(k-1) and regRinext(k);
@@ -211,8 +214,8 @@ begin
 	end generate logic;
 
 	with oper select
-		regRres_in <= logic_out_dil when '1'
-					  logic_out_ero when '0'
+		regRres_in <= logic_out_dil when '1',
+					  logic_out_ero when '0',
 					  X"00000000000000000000000000000000" when others;
 
 

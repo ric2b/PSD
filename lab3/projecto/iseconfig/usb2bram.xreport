@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2014-12-11T19:48:56</DateModified>
+  <DateModified>2014-12-13T01:13:32</DateModified>
   <ModuleName>usb2bram</ModuleName>
   <SummaryTimeStamp>2014-12-03T17:16:11</SummaryTimeStamp>
-  <SavedFilePath>C:/Users/PSD/Desktop/lab3/projecto/iseconfig/usb2bram.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>C:/Users/PSD/Desktop/lab3/Trash\</ImplementationReportsDirectory>
+  <SavedFilePath>/home/ricardo/Desktop/PSD/lab3/projecto/iseconfig/usb2bram.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>/home/ricardo/Desktop/PSD/lab3/Trash/</ImplementationReportsDirectory>
   <DateInitialized>2014-12-03T17:12:48</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>
