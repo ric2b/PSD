@@ -1,1 +1,8 @@
 *.directory
+*.stx
+*.prj
+*.xst
+*.xmsgs
+*.log
+*.gise
+lab3/Trash/
