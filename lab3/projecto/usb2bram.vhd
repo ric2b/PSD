@@ -167,7 +167,7 @@ begin
 		busDoB => dataOutBMemRead
 	);
 	
-	adrBMemWrite1 <= adrWithDelay;
+	adrBMemWrite0 <= adrWithDelay;
 
 	Inst_BlockRam_Write0 : BlockRam port map (
 		adrA   => adrAMemWrite0,
