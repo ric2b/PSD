@@ -17,18 +17,21 @@ entity controlo is
 		enBMemRead 		: out std_logic;
 		writeEnBMemRead : out std_logic;
 		
-		-- bits de controlo do porto B da memoria de escrita 0
+		-- bits de controlo do porto B das memorias de escrita 0 e 1
 		enBMemWrite0 		: out std_logic;
 		writeEnBMemWrite0	: out std_logic;
+		enBMemWrite1 		: out std_logic;
+		writeEnBMemWrite1	: out std_logic;
 
 		-- enables e selects --
-		enRegRead 		: out std_logic_vector(2 downto 0);		-- enables dos registos de leitura
-		enRegRiPrevious	: out std_logic; 						-- enable do registo Ri-1
-		enRegRiCurrent	: out std_logic;						-- enable do registo Ri
-		enRegRiNext		: out std_logic;						-- enable do registo Ri+1
-		selectMuxOper	: out std_logic;						-- select do mux que identifica a operacao a realizar
-		enRegResult		: out std_logic							-- enable do registo que guarda o resultado
-		
+		enRegRead 				: out std_logic_vector(2 downto 0);		-- enables dos registos de leitura
+		enRegRiPrevious			: out std_logic; 						-- enable do registo Ri-1
+		enRegRiCurrent			: out std_logic;						-- enable do registo Ri
+		enRegRiNext				: out std_logic;						-- enable do registo Ri+1
+		selectMuxOper			: out std_logic;						-- select do mux que identifica a operacao a realizar
+		enRegResult				: out std_logic;						-- enable do registo que guarda o resultado
+		selectMuxDataIn			: out std_logic;						-- select do mux que seleciona a origem dos dados introduzidos na datapath
+		selectMuxMemWriteAdr	: out std_logic							-- select do mux que seleciona a origem do endereco da memoria de escrita 1
 	);
 end controlo;
 
@@ -38,7 +41,7 @@ architecture Behavioral of controlo is
 	signal currstate, nextstate : fsm_states;
 	
 	-- counter signals --
-	signal count : std_logic_vector (9 downto 0); --tem que ter o mesmo tamanho do endereco do porto B
+	signal count : std_logic_vector (9 downto 0); 						-- tem que ter o mesmo tamanho do endereco do porto B
 	signal enCount, endCount, endRow, endLast : std_logic;
 	constant countEND : std_logic_vector (9 downto 0) := "1000000011"; 	-- determina quando termina a contagem (512 enderecos + 4) - 1 = 515
 	constant rowEND : std_logic_vector (1 downto 0) := "11";			-- determina quando termina uma linha
@@ -88,6 +91,8 @@ begin
 		selectMuxOper <= '0';
 		enRegResult <= '0';
 		enCount <= '0';
+		selectMuxDataIn <= '0';
+		selectMuxMemWriteAdr <= '0';
 	
 		case currstate is
 			when s_initial => -- comea o processamento se o sinal start ficar a high

@@ -72,10 +72,20 @@ architecture Structural of usb2bram is
 	signal enRegResult		 : std_logic := '0';
 
 	-- selects dos muxes--
-	signal selectMuxOper	 	 : std_logic := '0';
-	
+	signal selectMuxOper	 : std_logic := '0';									-- select do mux que identifica a operacao a realizar 
+
+	signal datapath_in		 : std_logic_vector (31 downto 0); 						-- entrada de dados da datapath
+	signal adrWithDelay		 : std_logic_vector (8 downto 0);						-- endereco com delay
+	------------------------------------------------------------
+	-- signais para constituir alguns componenetes de ligacao --
+	------------------------------------------------------------
+
+	-- selects dos muxes --
+	signal selectMuxDataIn		: std_logic := '0';									-- select do mux que seleciona a origem dos dados introduzidos na datapath
+	signal selectMuxMemWriteAdr	: std_logic := '0';									-- select do mux que seleciona a origem do endereco da memoria de escrita 1
+
 	-- registo de controlo entre a UC e a datapath --
-	signal regControl : std_logic_vector(16 downto 0) := (others => '0');
+	signal regControl : std_logic_vector(16 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
 	
 	----------------------------
 	-- Component Declarations --
@@ -120,19 +130,23 @@ architecture Structural of usb2bram is
 	end component;
 	
 	component controlo
-		Port ( 
-			start, clk, rst 	: in  std_logic;
-			adrBMemRead			: out std_logic_vector(8 downto 0);
-			enBMemRead 			: out std_logic;
-			writeEnBMemRead 	: out std_logic;
-			enBMemWrite0 		: out std_logic;
-			writeEnBMemWrite0	: out std_logic;
-			enRegRead 			: out std_logic_vector(2 downto 0);
-			enRegRiPrevious		: out std_logic;
-			enRegRiCurrent		: out std_logic;
-			enRegRiNext			: out std_logic;
-			selectMuxOper		: out std_logic;
-			enRegResult			: out std_logic
+		Port (
+			start, clk, rst 		: in  std_logic;
+			adrBMemRead				: out std_logic_vector(8 downto 0);
+			enBMemRead 				: out std_logic;
+			writeEnBMemRead 		: out std_logic;
+			enBMemWrite0 			: out std_logic;
+			writeEnBMemWrite0		: out std_logic;
+			enBMemWrite1 			: out std_logic;
+			writeEnBMemWrite1		: out std_logic;
+			enRegRead 				: out std_logic_vector(2 downto 0);
+			enRegRiPrevious			: out std_logic;
+			enRegRiCurrent			: out std_logic;
+			enRegRiNext				: out std_logic;
+			selectMuxOper			: out std_logic;
+			enRegResult				: out std_logic;
+			selectMuxDataIn			: out std_logic;
+			selectMuxMemWriteAdr	: out std_logic
 		);
 	end component;
 	
@@ -153,6 +167,8 @@ begin
 		busDoB => dataOutBMemRead
 	);
 	
+	adrBMemWrite1 <= adrWithDelay;
+
 	Inst_BlockRam_Write0 : BlockRam port map (
 		adrA   => adrAMemWrite0,
 		adrB   => adrBMemWrite0,
@@ -167,6 +183,27 @@ begin
 		busDoA => open,
 		busDoB => dataOutBMemWrite0
 	);
+
+	-- mux que seleciona a origem do endereco da memoria de escrita 1 --
+	adrBMemWrite1 <= adrWithDelay when selectMuxMemWriteAdr='0' else adrBMemRead;
+
+	Inst_BlockRam_Write1 : BlockRam port map (
+		adrA   => adrAMemWrite1,
+		adrB   => adrBMemWrite1,
+		busDiA => dataInAMemWrite1,
+		busDiB => dataInBMemWrite1,
+		clkA   => clk,
+		clkB   => clk,
+		ctlEnA => enAMemWrite1,
+		ctlEnB => enBMemWrite1,
+		ctlWeA => writeEnAMemWrite1,
+		ctlWeB => writeEnBMemWrite1,
+		busDoA => open,
+		busDoB => dataOutBMemWrite1
+	);
+
+	-- mux de selecao de entrada de dados na datapath --
+	datapath_in <= dataOutBMemRead when selectMuxDataIn='0' else dataOutBMemWrite1;
 
 	Inst_datapath: datapath port map(
 		clk => clk,
@@ -184,12 +221,12 @@ begin
 		regRiNext_out => regRiNext_out,
 		regResult_out	=> regResult_out,
 		adrBMemRead => regControl(16 downto 8),
-		adrBMemWrite => adrBMemWrite0,
-		datain => dataOutBMemRead,
+		adrBMemWrite => adrWithDelay,
+		datain => datapath_in,
 		dataout => dataInBMemWrite0
 	);
 	
-	-- registo de controlo entre a UC e a datapath--
+	-- registo de controlo entre a UC e a datapath --
 	process(clk)
 	begin
 		if clk'event and clk='1' then
@@ -206,12 +243,16 @@ begin
 		writeEnBMemRead => writeEnBMemRead,
 		enBMemWrite0 => enBMemWrite0,
 		writeEnBMemWrite0 => writeEnBMemWrite0,
+		enBMemWrite1 => enBMemWrite1, 
+		writeEnBMemWrite1 => writeEnBMemWrite1,
 		enRegRead => enRegRead,
 		enRegRiPrevious =>	enRegRiPrevious,
 		enRegRiCurrent => enRegRiCurrent,
 		enRegRiNext => enRegRiNext,
 		selectMuxOper	=> selectMuxOper,
-		enRegResult => enRegResult
+		enRegResult => enRegResult,
+		selectMuxDataIn => selectMuxDataIn,
+		selectMuxMemWriteAdr => selectMuxMemWriteAdr
 	);
 	
 	adrBMemRead_out <= adrBMemRead;
