@@ -5,23 +5,18 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity circuito is
 	port( 
-		start, rst, clk : in std_logic;
-		oper : in std_logic_vector(1 downto 0); -- oper(1) :  escolhe se é uma operacao baixo ou alto nivel
-												-- 00 : erosao
-												-- 01 :	dilatacao
-												-- 10 : abertura
-												-- 11 : fecho
+		start, rst, clk, oper : in std_logic;
 
 		-- memorias --
 		adrBMemRead_out : out std_logic_vector(8 downto 0);
-		dataInBMemRead_out : out std_logic_vector(31 downto 0);
+		dataInBMemRead_out : out std_logic_vector (31 downto 0);
 
 		-- saidas dos registos --
 		regRead_out 		: out std_logic_vector(127 downto 0);
 		regRiPrevious_out	: out std_logic_vector(127 downto 0);
 		regRiCurrent_out	: out std_logic_vector(127 downto 0);
 		regRiNext_out		: out std_logic_vector(127 downto 0);
-		regResult_out		: out std_logic_vector(127 downto 0)
+		regResult_out			: out std_logic_vector(127 downto 0)
 	);
 end circuito;
 
@@ -90,7 +85,7 @@ architecture Structural of circuito is
 	signal selectMuxMemWriteAdr	: std_logic := '0';									-- select do mux que seleciona a origem do endereco da memoria de escrita 1
 
 	-- registo de controlo entre a UC e a datapath --
-	signal regControl : std_logic_vector(17 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
+	signal regControl : std_logic_vector(16 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
 	
 	----------------------------
 	-- Component Declarations --
@@ -137,8 +132,6 @@ architecture Structural of circuito is
 	component controlo_level1
 		Port (
 			start, clk, rst 		: in  std_logic;
-			oper : in std_logic_vector(1 downto 0)
-			operSimple : out std_logic;
 			adrBMemRead				: out std_logic_vector(8 downto 0);
 			enBMemRead 				: out std_logic;
 			writeEnBMemRead 		: out std_logic;
@@ -215,7 +208,7 @@ begin
 	Inst_datapath: datapath port map(
 		clk => clk,
 		rst => rst,
-		oper => regControl(17),
+		oper => oper,
 		enRegRead => regControl(2 downto 0),
 		enRegRiPrevious => regControl(3),
 		enRegRiCurrent => regControl(4),
@@ -233,11 +226,11 @@ begin
 		dataout => dataInBMemWrite0
 	);
 	
-	-- registo de controlo entre a UC_level1 e a datapath --
+	-- registo de controlo entre a UC e a datapath --
 	process(clk)
 	begin
 		if clk'event and clk='1' then
-			regControl <= operSimple & adrBMemRead & enRegResult & selectMuxOper & enRegRiNext & enRegRiCurrent & enRegRiPrevious & enRegRead;
+			regControl <= adrBMemRead & enRegResult & selectMuxOper & enRegRiNext & enRegRiCurrent & enRegRiPrevious & enRegRead;
 		end if;
 	end process;
 

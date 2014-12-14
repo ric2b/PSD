@@ -8,16 +8,16 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity controlo is
+entity controlo_level0 is
 	Port (
-		start, clk, rst : in  std_logic;
+		start, clk, rst: in  std_logic;
 
-		-- bits de controlo da memoria de leitura --
+		-- bits de controlo_level0 da memoria de leitura --
 		adrBMemRead		: out std_logic_vector(8 downto 0);
 		enBMemRead 		: out std_logic;
 		writeEnBMemRead : out std_logic;
 		
-		-- bits de controlo do porto B das memorias de escrita 0 e 1
+		-- bits de controlo_level0 do porto B das memorias de escrita 0 e 1
 		enBMemWrite0 		: out std_logic;
 		writeEnBMemWrite0	: out std_logic;
 		enBMemWrite1 		: out std_logic;
@@ -33,9 +33,9 @@ entity controlo is
 		selectMuxDataIn			: out std_logic;						-- select do mux que seleciona a origem dos dados introduzidos na datapath
 		selectMuxMemWriteAdr	: out std_logic							-- select do mux que seleciona a origem do endereco da memoria de escrita 1
 	);
-end controlo;
+end controlo_level0;
 
-architecture Behavioral of controlo is
+architecture Behavioral of controlo_level0 is
 	-- state machine signals --
 	type fsm_states is ( s_initial, s_first, s_process, s_last, s_end);
 	signal currstate, nextstate : fsm_states;
