@@ -27,7 +27,8 @@ architecture Structural of circuito is
 	--------------------------------------------
 
 	-- sinais de ligacao da datapath
-	signal operSimple : std_logic := '0';
+	signal operSimple 		: std_logic := '0';
+	signal datapathResult 	: std_logic_vector(31 downto 0); 
 
 	-- sinais de ligacao da memoria de leitura --
 	signal adrAMemRead 		 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de leitura
@@ -179,7 +180,7 @@ begin
 		adrA   => adrAMemWrite0,
 		adrB   => adrBMemWrite0,
 		busDiA => dataInAMemWrite0,
-		busDiB => dataInBMemWrite0,
+		busDiB => datapathResult,
 		clkA   => clk,
 		clkB   => clk,
 		ctlEnA => enAMemWrite0,
@@ -197,7 +198,7 @@ begin
 		adrA   => adrAMemWrite1,
 		adrB   => adrBMemWrite1,
 		busDiA => dataInAMemWrite1,
-		busDiB => dataInBMemWrite1,
+		busDiB => datapathResult,
 		clkA   => clk,
 		clkB   => clk,
 		ctlEnA => enAMemWrite1,
@@ -229,7 +230,7 @@ begin
 		adrBMemRead => regControl(16 downto 8),
 		adrBMemWrite => adrWithDelay,
 		datain => datapath_in,
-		dataout => dataInBMemWrite0
+		dataout => datapathResult
 	);
 	
 	-- registo de controlo entre a UC e a datapath --
