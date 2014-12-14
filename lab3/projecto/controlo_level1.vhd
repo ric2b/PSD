@@ -54,10 +54,6 @@ architecture Behavioral of controlo_level1 is
 			adrBMemRead				: out std_logic_vector(8 downto 0);
 			enBMemRead 				: out std_logic;
 			writeEnBMemRead 		: out std_logic;
-			enBMemWrite0 			: out std_logic;
-			writeEnBMemWrite0		: out std_logic;
-			enBMemWrite1 			: out std_logic;
-			writeEnBMemWrite1		: out std_logic;
 			enRegRead 				: out std_logic_vector(2 downto 0);
 			enRegRiPrevious			: out std_logic;
 			enRegRiCurrent			: out std_logic;
@@ -77,10 +73,6 @@ begin
 		adrBMemRead => adrBMemRead,
 		enBMemRead => enBMemRead,
 		writeEnBMemRead => writeEnBMemRead,
-		enBMemWrite0 => enBMemWrite0,
-		writeEnBMemWrite0 => writeEnBMemWrite0,
-		enBMemWrite1 => enBMemWrite1, 
-		writeEnBMemWrite1 => writeEnBMemWrite1,
 		enRegRead => enRegRead,
 		enRegRiPrevious =>	enRegRiPrevious,
 		enRegRiCurrent => enRegRiCurrent,
@@ -89,6 +81,16 @@ begin
 		enRegResult => enRegResult
 	);
 	 
+	state_reg: process (clk, rst)
+	begin
+		if rst = '1' then
+			currstate <= s_initial;
+		elsif clk'event and clk = '1' then
+			currstate <= nextstate;
+		end if;
+	end process;
+
+
 	state_machine: process (currstate, start, done)
 	begin -- process
 		-- default values --

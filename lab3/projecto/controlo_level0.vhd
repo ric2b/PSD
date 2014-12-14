@@ -17,12 +17,6 @@ entity controlo_level0 is
 		adrBMemRead		: out std_logic_vector(8 downto 0);
 		enBMemRead 		: out std_logic;
 		writeEnBMemRead : out std_logic;
-		
-		-- bits de controlo_level0 do porto B das memorias de escrita 0 e 1
-		enBMemWrite0 		: out std_logic;
-		writeEnBMemWrite0	: out std_logic;
-		enBMemWrite1 		: out std_logic;
-		writeEnBMemWrite1	: out std_logic;
 
 		-- enables e selects --
 		enRegRead 				: out std_logic_vector(2 downto 0);		-- enables dos registos de leitura
@@ -30,9 +24,7 @@ entity controlo_level0 is
 		enRegRiCurrent			: out std_logic;						-- enable do registo Ri
 		enRegRiNext				: out std_logic;						-- enable do registo Ri+1
 		selectMuxOper			: out std_logic;						-- select do mux que identifica a operacao a realizar
-		enRegResult				: out std_logic;						-- enable do registo que guarda o resultado
-		selectMuxDataIn			: out std_logic;						-- select do mux que seleciona a origem dos dados introduzidos na datapath
-		selectMuxMemWriteAdr	: out std_logic							-- select do mux que seleciona a origem do endereco da memoria de escrita 1
+		enRegResult				: out std_logic						-- enable do registo que guarda o resultado
 	);
 end controlo_level0;
 
@@ -84,8 +76,6 @@ begin
 		adrBMemRead <= "000000000";
 		enBMemRead <= '1';
 		writeEnBMemRead <= '0';
-		enBMemWrite0 <= '1';
-		writeEnBMemWrite0 <= '1';
 		enRegRead <= "000";
 		enRegRiPrevious <= '0';
 		enRegRiCurrent <= '0';
@@ -93,8 +83,6 @@ begin
 		selectMuxOper <= '0';
 		enRegResult <= '0';
 		enCount <= '0';
-		selectMuxDataIn <= '0';
-		selectMuxMemWriteAdr <= '0';
 	
 		case currstate is
 			when s_initial => -- comea o processamento se o sinal start ficar a high
@@ -160,7 +148,6 @@ begin
 				end if;
 
 			when s_end => -- terminou a execucaoo, idle
-				writeEnBMemWrite0 <= '0';
 				done <= '1';
 				
 		end case;
