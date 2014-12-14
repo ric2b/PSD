@@ -95,16 +95,18 @@ begin
 	end process;
 
 
-	state_machine: process (currstate, start, done)
+	state_machine: process (currstate, start, done, oper)
 	begin -- process
-		-- default values --
+		-- default values -- 	
 		enBMemWrite0 			<= '1';
 		writeEnBMemWrite0		<= '0';
 		enBMemWrite1 			<= '0';
 		writeEnBMemWrite1		<= '0';
 		selectMuxDataIn 		<= '0';
 		selectMuxMemWriteAdr 	<= '0';
+		start_level0			<= '0';
 		restart_level0			<= '0';
+		operSimple				<= '0';
 
 		case currstate is
 

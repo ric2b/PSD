@@ -10,7 +10,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity datapath is
 	Port ( 
-		rst, clk 		: in std_logic;
+		clk	 				: in std_logic;
 		oper				: in std_logic;						-- (dilatacao = 1 / erosao = 0)
 
 		-- enables --
