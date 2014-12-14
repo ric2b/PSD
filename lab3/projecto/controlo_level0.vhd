@@ -147,7 +147,7 @@ begin
 					enRegResult <= '1';
 				end if;
 
-			when s_end => -- terminou a execucaoo, idle
+			when s_end => -- terminou a execucao, idle
 				done <= '1';
 				
 		end case;

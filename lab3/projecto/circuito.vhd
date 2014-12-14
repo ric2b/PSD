@@ -6,7 +6,11 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity circuito is
 	port( 
 		start, rst, clk	: in std_logic;
-		oper					: in std_logic_vector(1 downto 0);
+		oper					: in std_logic_vector(1 downto 0);	-- oper(1) escolhe entre operacoes simples ou complexas
+																	-- 00: erosao
+																	-- 01: dilatacao
+																	-- 10: abertura 
+																	-- 11: fecho
 
 		-- memorias --
 		adrBMemRead_out : out std_logic_vector(8 downto 0);
@@ -89,7 +93,7 @@ architecture Structural of circuito is
 	signal selectMuxMemWriteAdr	: std_logic := '0';									-- select do mux que seleciona a origem do endereco da memoria de escrita 1
 
 	-- registo de controlo entre a UC e a datapath --
-	signal regControl : std_logic_vector(16 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
+	signal regControl : std_logic_vector(17 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
 	
 	----------------------------
 	-- Component Declarations --
@@ -214,7 +218,7 @@ begin
 	Inst_datapath: datapath port map(
 		clk => clk,
 		rst => rst,
-		oper => operSimple,
+		oper => regControl(17),
 		enRegRead => regControl(2 downto 0),
 		enRegRiPrevious => regControl(3),
 		enRegRiCurrent => regControl(4),
@@ -236,7 +240,7 @@ begin
 	process(clk)
 	begin
 		if clk'event and clk='1' then
-			regControl <= adrBMemRead & enRegResult & selectMuxOper & enRegRiNext & enRegRiCurrent & enRegRiPrevious & enRegRead;
+			regControl <= operSimple & adrBMemRead & enRegResult & selectMuxOper & enRegRiNext & enRegRiCurrent & enRegRiPrevious & enRegRead;
 		end if;
 	end process;
 
