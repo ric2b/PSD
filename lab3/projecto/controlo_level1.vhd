@@ -40,11 +40,12 @@ end controlo_level1;
 
 architecture Behavioral of controlo_level1 is
 	
-	type fsm_states is ( s_initial, s_erosao, s_dilatacao,  s_fecho, s_abertura, s_end);
+	type fsm_states is ( s_initial, s_erosao, s_dilatacao, s_end);
 	signal currstate, nextstate : fsm_states;
 
 	signal start_level0		: std_logic := '0';
 	signal done 			: std_logic := '0';
+	signal reset_level0		: std_logic := '0';
 
 	-- instanciação da UC level0
 	component controlo_level0 
@@ -100,44 +101,97 @@ begin
 		writeEnBMemWrite1		<= '0';
 		selectMuxDataIn 		<= '0';
 		selectMuxMemWriteAdr 	<= '0';
+		reset_level0			<= '0';
 
 		case currstate is
 
-			when s_initial => -- comea o processamento se o sinal start ficar a high
-				if start='1' and oper="00" then
+
+			when s_initial => -- comeca o processamento se o sinal start ficar a high
+				if start='1' and oper(0) = '0' then
 					nextstate <= s_erosao;
 				end if;
 				
-				if start='1' and oper="01" then
+				if start='1' and oper(0) = '1' then
 					nextstate <= s_dilatacao;
 				end if;
 				
-				if start='1' and oper="10" then
-					nextstate <= s_fecho;
-				end if;
-
-				if start='1' and oper="11" then
-					nextstate <= s_abertura;
-				end if;
-
 			when s_erosao =>
-				operSimple				<= '0';			
-				writeEnBMemWrite0		<= '1';
-				start_level0 			<= '1';
-				if done='1' then
-					nextstate <= s_end;
+				operSimple				<= '0';
+				
+				if oper="00" then -- erosao simples		
+					writeEnBMemWrite0		<= '1';
+					start_level0 			<= '1';
+					if done='1' then
+						nextstate <= s_end;
+					--	writeEnBMemWrite0	<= '0';
+					end if;
+				end if;
+	
+				if oper="10" then -- primeiro passo da abertura
+					enBMemWrite1 			<= '1';			
+					writeEnBMemWrite0		<= '0';
+					writeEnBMemWrite1		<= '1';
+					selectMuxDataIn 		<= '0';
+					selectMuxMemWriteAdr 	<= '0';
+					start_level0 			<= '1';
+
+					if done='1' then
+						nextstate <= s_dilatacao;
+						writeEnBMemWrite1 <= '0';
+					end if;
+				end if;
+
+				if oper="11" then -- segundo passo do fecho
+					enBMemWrite1 			<= '1';			
+					writeEnBMemWrite0		<= '1';
+					writeEnBMemWrite1		<= '0';
+					selectMuxDataIn 		<= '1';
+					selectMuxMemWriteAdr 	<= '1';
+					start_level0 			<= '1';
+
+					if done='1' then
+						nextstate <= s_end;
+						writeEnBMemWrite0 <= '0';
+					end if;
 				end if;
 
 			when s_dilatacao =>
-				operSimple				<= '1';			
-				writeEnBMemWrite0		<= '1';
-				start_level0 			<= '1';
-				if done='1' then
-					nextstate <= s_end;
+				operSimple				<= '1';
+				
+				if oper="01" then -- dilatacao simples								
+					writeEnBMemWrite0		<= '1';
+					start_level0 			<= '1';
+					if done='1' then
+						nextstate <= s_end;
+					end if;
 				end if;
-			when s_fecho =>
-			
-			when s_abertura =>
+
+				if oper="11" then -- primeiro passo da abertura
+					enBMemWrite1 			<= '1';			
+					writeEnBMemWrite1		<= '1';
+					selectMuxDataIn 		<= '0';
+					selectMuxMemWriteAdr 	<= '0';
+					start_level0 			<= '1';
+
+					if done='1' then
+						nextstate <= s_erosao;
+						writeEnBMemWrite1		<= '0';
+						reset_level0 <= '1';
+					end if;
+				end if;
+
+				if oper="10" then -- segundo passo do fecho
+					enBMemWrite1 			<= '1';			
+					writeEnBMemWrite0		<= '1';
+					selectMuxDataIn 		<= '1';
+					selectMuxMemWriteAdr 	<= '1';
+					start_level0 			<= '1';
+
+					if done='1' then
+						nextstate <= s_end;
+						writeEnBMemWrite0 <= '0';
+					end if;
+				end if;
 
 			when s_end =>
 				writeEnBMemWrite0 <= '0';

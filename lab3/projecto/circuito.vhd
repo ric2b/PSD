@@ -89,7 +89,7 @@ architecture Structural of circuito is
 	signal selectMuxMemWriteAdr	: std_logic := '0';									-- select do mux que seleciona a origem do endereco da memoria de escrita 1
 
 	-- registo de controlo entre a UC e a datapath --
-	signal regControl : std_logic_vector(16 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
+	signal regControl : std_logic_vector(17 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
 	
 	----------------------------
 	-- Component Declarations --
@@ -214,7 +214,7 @@ begin
 	Inst_datapath: datapath port map(
 		clk => clk,
 		rst => rst,
-		oper => operSimple,
+		oper => regControl(17),
 		enRegRead => regControl(2 downto 0),
 		enRegRiPrevious => regControl(3),
 		enRegRiCurrent => regControl(4),
@@ -236,7 +236,7 @@ begin
 	process(clk)
 	begin
 		if clk'event and clk='1' then
-			regControl <= adrBMemRead & enRegResult & selectMuxOper & enRegRiNext & enRegRiCurrent & enRegRiPrevious & enRegRead;
+			regControl <= operSimple & adrBMemRead & enRegResult & selectMuxOper & enRegRiNext & enRegRiCurrent & enRegRiPrevious & enRegRead;
 		end if;
 	end process;
 
