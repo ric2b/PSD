@@ -60,7 +60,7 @@ ARCHITECTURE behavior OF circuito_tb IS
    signal start : std_logic := '0';
    signal rst : std_logic := '0';
    signal clk : std_logic := '0';
-   signal oper : std_logic_vector := "00";
+   signal oper : std_logic_vector(1 downto 0) := "00";
 
  	--Outputs
    signal adrBMemRead_out : std_logic_vector(8 downto 0);

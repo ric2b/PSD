@@ -63,9 +63,7 @@ architecture Behavioral of controlo_level1 is
 			enRegRiCurrent			: out std_logic;
 			enRegRiNext				: out std_logic;
 			selectMuxOper			: out std_logic;
-			enRegResult				: out std_logic;
-			selectMuxDataIn			: out std_logic;
-			selectMuxMemWriteAdr	: out std_logic
+			enRegResult				: out std_logic
 		);
 	end component;
 
@@ -88,15 +86,18 @@ begin
 		enRegRiCurrent => enRegRiCurrent,
 		enRegRiNext => enRegRiNext,
 		selectMuxOper	=> selectMuxOper,
-		enRegResult => enRegResult,
-		selectMuxDataIn => selectMuxDataIn,
-		selectMuxMemWriteAdr => selectMuxMemWriteAdr
+		enRegResult => enRegResult
 	);
 	 
 	state_machine: process (currstate, start, done)
 	begin -- process
 		-- default values --
-
+		enBMemWrite0 			<= '1';
+		writeEnBMemWrite0		<= '0';
+		enBMemWrite1 			<= '0';
+		writeEnBMemWrite1		<= '0';
+		selectMuxDataIn 		<= '0';
+		selectMuxMemWriteAdr 	<= '0';
 
 		case currstate is
 
@@ -118,15 +119,27 @@ begin
 				end if;
 
 			when s_erosao =>
+				operSimple				<= '0';			
+				writeEnBMemWrite0		<= '1';
+				start_level0 			<= '1';
+				if done='1' then
+					nextstate <= s_end;
+				end if;
 
 			when s_dilatacao =>
-			
+				operSimple				<= '1';			
+				writeEnBMemWrite0		<= '1';
+				start_level0 			<= '1';
+				if done='1' then
+					nextstate <= s_end;
+				end if;
 			when s_fecho =>
 			
 			when s_abertura =>
 
 			when s_end =>
-
+				writeEnBMemWrite0 <= '0';
+				writeEnBMemWrite1 <= '0';
 
 		end case;
 	end process;
