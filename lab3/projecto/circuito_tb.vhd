@@ -110,7 +110,7 @@ BEGIN
       wait for clk_period*10;
 
       -- insert stimulus here 
-		oper <= "01";
+		oper <= "11";
 		
 		rst <= '1' after 0 ns;
 		rst <= '0' after clk_period;

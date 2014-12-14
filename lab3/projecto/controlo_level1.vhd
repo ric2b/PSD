@@ -45,12 +45,13 @@ architecture Behavioral of controlo_level1 is
 
 	signal start_level0		: std_logic := '0';
 	signal done 			: std_logic := '0';
-	signal reset_level0		: std_logic := '0';
+	signal rst_level0 		: std_logic := '0';
+	signal restart_level0	: std_logic := '0';
 
 	-- instanciação da UC level0
 	component controlo_level0 
 		Port (
-			start, clk, rst			: in  std_logic;
+			start, clk, rst 		: in  std_logic;
 			done					: out std_logic;
 			adrBMemRead				: out std_logic_vector(8 downto 0);
 			enBMemRead 				: out std_logic;
@@ -69,7 +70,7 @@ begin
 	Inst_controlo_level0: controlo_level0 port map(
 		start => start_level0, 
 		clk => clk, 
-		rst => rst,
+		rst => rst_level0,
 		done => done,
 		adrBMemRead => adrBMemRead,
 		enBMemRead => enBMemRead,
@@ -82,10 +83,13 @@ begin
 		enRegResult => enRegResult
 	);
 	 
+	rst_level0 <= rst or restart_level0;
+
 	state_reg: process (clk, rst)
 	begin
 		if rst = '1' then
 			currstate <= s_initial;
+			restart_level0 <= '1';
 		elsif clk'event and clk = '1' then
 			currstate <= nextstate;
 		end if;
@@ -101,7 +105,7 @@ begin
 		writeEnBMemWrite1		<= '0';
 		selectMuxDataIn 		<= '0';
 		selectMuxMemWriteAdr 	<= '0';
-		reset_level0			<= '0';
+		restart_level0			<= '0';
 
 		case currstate is
 
@@ -176,7 +180,7 @@ begin
 					if done='1' then
 						nextstate <= s_erosao;
 						writeEnBMemWrite1		<= '0';
-						reset_level0 <= '1';
+						restart_level0 <= '1';
 					end if;
 				end if;
 

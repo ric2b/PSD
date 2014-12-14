@@ -10,8 +10,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity controlo_level0 is
 	Port (
-		start, clk, rst	: in  std_logic;
-		done			: out std_logic;
+		start, clk, rst 			: in  std_logic;
+		done						: out std_logic;
 
 		-- bits de controlo_level0 da memoria de leitura --
 		adrBMemRead		: out std_logic_vector(8 downto 0);
