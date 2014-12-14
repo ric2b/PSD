@@ -43,7 +43,8 @@ architecture Behavioral of controlo_level1 is
 	type fsm_states is ( s_initial, s_erosao, s_dilatacao,  s_fecho, s_abertura, s_end);
 	signal currstate, nextstate : fsm_states;
 
-	signal done : std_logic;
+	signal start_level0		: std_logic := '0';
+	signal done 			: std_logic := '0';
 
 	-- instanciação da UC level0
 	component controlo_level0 
@@ -71,7 +72,7 @@ architecture Behavioral of controlo_level1 is
 begin
 
 	Inst_controlo_level0: controlo_level0 port map(
-		start => start, 
+		start => start_level0, 
 		clk => clk, 
 		rst => rst,
 		done => done,
@@ -92,20 +93,42 @@ begin
 		selectMuxMemWriteAdr => selectMuxMemWriteAdr
 	);
 	 
-	--state_comb: process (currstate, start, count, endCount, endRow, endLast)
---	begin -- process
+	state_machine: process (currstate, start, done)
+	begin -- process
 		-- default values --
 
 
-		--case currstate is
+		case currstate is
 
-		--	when s_initial => -- comea o processamento se o sinal start ficar a high
-		--		if start='1' then
-		--			nextstate <= s_first ;
-		--		end if;
+			when s_initial => -- comea o processamento se o sinal start ficar a high
+				if start='1' and oper="00" then
+					nextstate <= s_erosao;
+				end if;
+				
+				if start='1' and oper="01" then
+					nextstate <= s_dilatacao;
+				end if;
+				
+				if start='1' and oper="10" then
+					nextstate <= s_fecho;
+				end if;
+
+				if start='1' and oper="11" then
+					nextstate <= s_abertura;
+				end if;
+
+			when s_erosao =>
+
+			when s_dilatacao =>
+			
+			when s_fecho =>
+			
+			when s_abertura =>
+
+			when s_end =>
 
 
-	--	end case;
---	end process;
+		end case;
+	end process;
 end Behavioral;
 
