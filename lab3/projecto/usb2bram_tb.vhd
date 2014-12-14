@@ -2,10 +2,10 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   16:04:15 12/09/2014
+-- Create Date:   18:31:30 12/13/2014
 -- Design Name:   
--- Module Name:   /home/david/Documents/roberto/t_tb.vhd
--- Project Name:  roberto
+-- Module Name:   /home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P3/PSD/Imagens/usb2bram_tb.vhd
+-- Project Name:  Imagens
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
@@ -32,10 +32,10 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY t_tb IS
-END t_tb;
+ENTITY usb2bram_tb IS
+END usb2bram_tb;
  
-ARCHITECTURE behavior OF t_tb IS 
+ARCHITECTURE behavior OF usb2bram_tb IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
@@ -44,13 +44,14 @@ ARCHITECTURE behavior OF t_tb IS
          start : IN  std_logic;
          rst : IN  std_logic;
          clk : IN  std_logic;
-         done : OUT  std_logic;
-         regR10_out : OUT  std_logic_vector(31 downto 0);
-         regR11_out : OUT  std_logic_vector(31 downto 0);
-         regR12_out : OUT  std_logic_vector(31 downto 0);
-         regR1_out : OUT  std_logic_vector(127 downto 0);
-			regR2_out : out std_logic_vector(127 downto 0);
-         addrOut : OUT  std_logic_vector(8 downto 0)
+         oper : IN  std_logic;
+         adrBMemRead_out : OUT  std_logic_vector(8 downto 0);
+         dataInBMemRead_out : OUT  std_logic_vector(31 downto 0);
+         regRead_out : OUT  std_logic_vector(127 downto 0);
+         regRiPrevious_out : OUT  std_logic_vector(127 downto 0);
+         regRiCurrent_out : OUT  std_logic_vector(127 downto 0);
+         regRiNext_out : OUT  std_logic_vector(127 downto 0);
+         regResult_out : OUT  std_logic_vector(127 downto 0)
         );
     END COMPONENT;
     
@@ -59,15 +60,16 @@ ARCHITECTURE behavior OF t_tb IS
    signal start : std_logic := '0';
    signal rst : std_logic := '0';
    signal clk : std_logic := '0';
+   signal oper : std_logic := '0';
 
  	--Outputs
-   signal done : std_logic;
-   signal regR10_out : std_logic_vector(31 downto 0);
-   signal regR11_out : std_logic_vector(31 downto 0);
-   signal regR12_out : std_logic_vector(31 downto 0);
-   signal regR1_out : std_logic_vector(127 downto 0);
-	signal regR2_out : std_logic_vector(127 downto 0);
-   signal addrOut : std_logic_vector(8 downto 0);
+   signal adrBMemRead_out : std_logic_vector(8 downto 0);
+   signal dataInBMemRead_out : std_logic_vector(31 downto 0);
+   signal regRead_out : std_logic_vector(127 downto 0);
+   signal regRiPrevious_out : std_logic_vector(127 downto 0);
+   signal regRiCurrent_out : std_logic_vector(127 downto 0);
+   signal regRiNext_out : std_logic_vector(127 downto 0);
+   signal regResult_out : std_logic_vector(127 downto 0);
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -79,13 +81,14 @@ BEGIN
           start => start,
           rst => rst,
           clk => clk,
-          done => done,
-          regR10_out => regR10_out,
-          regR11_out => regR11_out,
-          regR12_out => regR12_out,
-          regR1_out => regR1_out,
-			 regR2_out => regR2_out,
-          addrOut => addrOut
+          oper => oper,
+          adrBMemRead_out => adrBMemRead_out,
+          dataInBMemRead_out => dataInBMemRead_out,
+          regRead_out => regRead_out,
+          regRiPrevious_out => regRiPrevious_out,
+          regRiCurrent_out => regRiCurrent_out,
+          regRiNext_out => regRiNext_out,
+          regResult_out => regResult_out
         );
 
    -- Clock process definitions
@@ -107,10 +110,11 @@ BEGIN
       wait for clk_period*10;
 
       -- insert stimulus here 
+		oper <= '1';
 		
 		rst <= '1' after 0 ns;
-		rst <= '0' after 20 ns;
-		start <= '1' after 0 ns;
+		rst <= '0' after clk_period;
+		start <= '1' after 2*clk_period;
 
       wait;
    end process;

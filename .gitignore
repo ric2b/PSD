@@ -1,1 +1,13 @@
+Trash/
+lab3/Trash/
+lab3/projecto/iseconfig
 *.directory
+*.stx
+*.prj
+*.xst
+*.xmsgs
+*.log
+*.gise
+*.xise
+*.cmd_log
+
