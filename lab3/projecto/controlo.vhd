@@ -140,6 +140,7 @@ begin
 				else
 					nextstate <= s_last;
 				end if;
+				enCount <= '1';
 
 				-- count = 0 ; primeiro ciclo --
 				if count = "0000000000" then
