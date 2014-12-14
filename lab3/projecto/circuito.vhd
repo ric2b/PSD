@@ -5,7 +5,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity circuito is
 	port( 
-		start, rst, clk, oper : in std_logic;
+		start, rst, clk	: in std_logic;
+		oper					: in std_logic_vector(1 downto 0);
 
 		-- memorias --
 		adrBMemRead_out : out std_logic_vector(8 downto 0);
@@ -24,6 +25,9 @@ architecture Structural of circuito is
 	--------------------------------------------
 	-- signals to interconnect the components --
 	--------------------------------------------
+
+	-- sinais de ligacao da datapath
+	signal operSimple : std_logic := '0';
 
 	-- sinais de ligacao da memoria de leitura --
 	signal adrAMemRead 		 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de leitura
@@ -131,7 +135,9 @@ architecture Structural of circuito is
 	
 	component controlo_level1
 		Port (
-			start, clk, rst 		: in  std_logic;
+			start, clk, rst			: in  std_logic;
+			oper					: in std_logic_vector(1 downto 0);
+			operSimple				: out std_logic;
 			adrBMemRead				: out std_logic_vector(8 downto 0);
 			enBMemRead 				: out std_logic;
 			writeEnBMemRead 		: out std_logic;
@@ -208,7 +214,7 @@ begin
 	Inst_datapath: datapath port map(
 		clk => clk,
 		rst => rst,
-		oper => oper,
+		oper => operSimple,
 		enRegRead => regControl(2 downto 0),
 		enRegRiPrevious => regControl(3),
 		enRegRiCurrent => regControl(4),
@@ -238,6 +244,8 @@ begin
 		start => start, 
 		clk => clk, 
 		rst => rst,
+		oper => oper,
+		operSimple => operSimple,
 		adrBMemRead => adrBMemRead,
 		enBMemRead => enBMemRead,
 		writeEnBMemRead => writeEnBMemRead,

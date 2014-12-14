@@ -14,7 +14,6 @@ entity controlo_level1 is
 
 		-- bits de controlo derivados do oper
 		operSimple : out std_logic;
-		operType : out std_logic;
 
 		-- bits de controlo_level1 da memoria de leitura --
 		adrBMemRead		: out std_logic_vector(8 downto 0);
@@ -41,10 +40,16 @@ end controlo_level1;
 
 architecture Behavioral of controlo_level1 is
 	
+	type fsm_states is ( s_initial, s_erosao, s_dilatacao,  s_fecho, s_abertura, s_end);
+	signal currstate, nextstate : fsm_states;
+
+	signal done : std_logic;
+
 	-- instanciação da UC level0
 	component controlo_level0 
 		Port (
 			start, clk, rst			: in  std_logic;
+			done					: out std_logic;
 			adrBMemRead				: out std_logic_vector(8 downto 0);
 			enBMemRead 				: out std_logic;
 			writeEnBMemRead 		: out std_logic;
@@ -69,6 +74,7 @@ begin
 		start => start, 
 		clk => clk, 
 		rst => rst,
+		done => done,
 		adrBMemRead => adrBMemRead,
 		enBMemRead => enBMemRead,
 		writeEnBMemRead => writeEnBMemRead,
@@ -85,6 +91,21 @@ begin
 		selectMuxDataIn => selectMuxDataIn,
 		selectMuxMemWriteAdr => selectMuxMemWriteAdr
 	);
-	
+	 
+	--state_comb: process (currstate, start, count, endCount, endRow, endLast)
+--	begin -- process
+		-- default values --
+
+
+		--case currstate is
+
+		--	when s_initial => -- comea o processamento se o sinal start ficar a high
+		--		if start='1' then
+		--			nextstate <= s_first ;
+		--		end if;
+
+
+	--	end case;
+--	end process;
 end Behavioral;
 

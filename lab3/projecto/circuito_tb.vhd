@@ -32,19 +32,19 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY usb2bram_tb IS
-END usb2bram_tb;
+ENTITY circuito_tb IS
+END circuito_tb;
  
-ARCHITECTURE behavior OF usb2bram_tb IS 
+ARCHITECTURE behavior OF circuito_tb IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
-    COMPONENT usb2bram
+    COMPONENT circuito
     PORT(
          start : IN  std_logic;
          rst : IN  std_logic;
          clk : IN  std_logic;
-         oper : IN  std_logic;
+         oper : IN  std_logic_vector(1 downto 0);
          adrBMemRead_out : OUT  std_logic_vector(8 downto 0);
          dataInBMemRead_out : OUT  std_logic_vector(31 downto 0);
          regRead_out : OUT  std_logic_vector(127 downto 0);
@@ -60,7 +60,7 @@ ARCHITECTURE behavior OF usb2bram_tb IS
    signal start : std_logic := '0';
    signal rst : std_logic := '0';
    signal clk : std_logic := '0';
-   signal oper : std_logic := '0';
+   signal oper : std_logic_vector := "00";
 
  	--Outputs
    signal adrBMemRead_out : std_logic_vector(8 downto 0);
@@ -77,7 +77,7 @@ ARCHITECTURE behavior OF usb2bram_tb IS
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
-   uut: usb2bram PORT MAP (
+   uut: circuito PORT MAP (
           start => start,
           rst => rst,
           clk => clk,
@@ -110,7 +110,7 @@ BEGIN
       wait for clk_period*10;
 
       -- insert stimulus here 
-		oper <= '1';
+		oper <= "01";
 		
 		rst <= '1' after 0 ns;
 		rst <= '0' after clk_period;

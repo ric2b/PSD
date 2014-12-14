@@ -10,7 +10,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity controlo_level0 is
 	Port (
-		start, clk, rst: in  std_logic;
+		start, clk, rst	: in  std_logic;
+		done			: out std_logic;
 
 		-- bits de controlo_level0 da memoria de leitura --
 		adrBMemRead		: out std_logic_vector(8 downto 0);
@@ -79,6 +80,7 @@ begin
 	begin  --  process
 		nextstate <= currstate ;  -- by default, does not change the state.
 		-- default values --
+		done <=	'0';
 		adrBMemRead <= "000000000";
 		enBMemRead <= '1';
 		writeEnBMemRead <= '0';
@@ -159,6 +161,7 @@ begin
 
 			when s_end => -- terminou a execucaoo, idle
 				writeEnBMemWrite0 <= '0';
+				done <= '1';
 				
 		end case;
 	end process;
