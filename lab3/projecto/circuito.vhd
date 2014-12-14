@@ -218,7 +218,8 @@ begin
 	Inst_datapath: datapath port map(
 		clk => clk,
 		rst => rst,
-		oper => regControl(17),
+		oper => operSimple,
+	--	oper => regControl(17),
 		enRegRead => regControl(2 downto 0),
 		enRegRiPrevious => regControl(3),
 		enRegRiCurrent => regControl(4),
