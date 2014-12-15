@@ -44,27 +44,27 @@ architecture Structural of circuito is
 	signal writeEnBMemRead	 : std_logic := '0';									-- write enable da memoria de leitura
 
 	-- sinais de ligacao da memoria de escrita 0 --
-	signal adrAMemWrite0	 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de escrita 0
+--	signal adrAMemWrite0	 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de escrita 0
 	signal dataInAMemWrite0	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de entrada do porto A da memoria de escrita 0
 	signal dataOutAMemWrite0 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de saida do porto A da memoria de escrita 0
 	signal enAMemWrite0		 : std_logic := '0';									-- enable da memoria de escrita 0
 	signal writeEnAMemWrite0 : std_logic := '0';									-- write enable da memoria de escrita 0
 
 	signal adrBMemWrite0 	 : std_logic_vector(8 downto 0) := (others => '0');		-- endereco porto B da memoria de escrita 0
-	signal dataInBMemWrite0	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de entrada do porto B da memoria de escrita 0
+--	signal dataInBMemWrite0	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de entrada do porto B da memoria de escrita 0
 	signal dataOutBMemWrite0 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de saida do porto B da memoria de escrita 0
 	signal enBMemWrite0		 : std_logic := '0';									-- enable da memoria de escrita 0
 	signal writeEnBMemWrite0 : std_logic := '0';									-- write enable da memoria de escrita 0
 
 	-- sinais de ligacao da memoria de escrita 1 --
-	signal adrAMemWrite1	 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de escrita 1
+--	signal adrAMemWrite1	 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de escrita 1
 	signal dataInAMemWrite1	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de entrada do porto A da memoria de escrita 1
 	signal dataOutAMemWrite1 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de saida do porto A da memoria de escrita 1
 	signal enAMemWrite1		 : std_logic := '0';									-- enable da memoria de escrita 1
 	signal writeEnAMemWrite1 : std_logic := '0';									-- write enable da memoria de escrita 1
 
 	signal adrBMemWrite1 	 : std_logic_vector(8 downto 0) := (others => '0');		-- endereco porto B da memoria de escrita 1
-	signal dataInBMemWrite1	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de entrada do porto B da memoria de escrita 1
+--	signal dataInBMemWrite1	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de entrada do porto B da memoria de escrita 1
 	signal dataOutBMemWrite1 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de saida do porto B da memoria de escrita 1
 	signal enBMemWrite1		 : std_logic := '0';									-- enable da memoria de escrita 1
 	signal writeEnBMemWrite1 : std_logic := '0';									-- write enable da memoria de escrita 1
@@ -114,7 +114,7 @@ architecture Structural of circuito is
 	
 	component datapath
 		Port(
-			rst, clk 			: in std_logic;
+			clk 			: in std_logic;
 			oper				: in std_logic;
 			enRegRead 			: in std_logic_vector(2 downto 0);
 			enRegRiPrevious		: in std_logic;
@@ -170,14 +170,14 @@ begin
 		ctlEnB => enBMemRead,
 		ctlWeA => writeEnAMemRead,
 		ctlWeB => writeEnBMemRead,
-		busDoA => open,
+		busDoA => dataOutAMemRead,
 		busDoB => dataOutBMemRead
 	);
 	
 	adrBMemWrite0 <= adrWithDelay;
 
 	Inst_BlockRam_Write0 : BlockRam port map (
-		adrA   => adrAMemWrite0,
+		adrA   => "00000000000",
 		adrB   => adrBMemWrite0,
 		busDiA => dataInAMemWrite0,
 		busDiB => datapathResult,
@@ -187,7 +187,7 @@ begin
 		ctlEnB => enBMemWrite0,
 		ctlWeA => writeEnAMemWrite0,
 		ctlWeB => writeEnBMemWrite0,
-		busDoA => open,
+		busDoA => dataOutAMemWrite0,
 		busDoB => dataOutBMemWrite0
 	);
 
@@ -195,7 +195,7 @@ begin
 	adrBMemWrite1 <= adrWithDelay when selectMuxMemWriteAdr='0' else adrBMemRead;
 
 	Inst_BlockRam_Write1 : BlockRam port map (
-		adrA   => adrAMemWrite1,
+		adrA   => "00000000000",
 		adrB   => adrBMemWrite1,
 		busDiA => dataInAMemWrite1,
 		busDiB => datapathResult,
@@ -205,7 +205,7 @@ begin
 		ctlEnB => enBMemWrite1,
 		ctlWeA => writeEnAMemWrite1,
 		ctlWeB => writeEnBMemWrite1,
-		busDoA => open,
+		busDoA => dataOutAMemWrite1,
 		busDoB => dataOutBMemWrite1
 	);
 
@@ -214,7 +214,6 @@ begin
 
 	Inst_datapath: datapath port map(
 		clk => clk,
-		rst => rst,
 		oper => regControl(17),
 		enRegRead => regControl(2 downto 0),
 		enRegRiPrevious => regControl(3),

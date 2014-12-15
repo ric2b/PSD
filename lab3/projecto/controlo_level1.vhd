@@ -89,23 +89,25 @@ begin
 	begin
 		if rst = '1' then
 			currstate <= s_initial;
-			restart_level0 <= '1';
 		elsif clk'event and clk = '1' then
 			currstate <= nextstate;
 		end if;
 	end process;
 
 
-	state_machine: process (currstate, start, done)
+	state_machine: process (currstate, start, done, oper)
 	begin -- process
-		-- default values --
-		enBMemWrite0 			<= '1';
-		writeEnBMemWrite0		<= '0';
-		enBMemWrite1 			<= '0';
-		writeEnBMemWrite1		<= '0';
-		selectMuxDataIn 		<= '0';
-		selectMuxMemWriteAdr 	<= '0';
-		restart_level0			<= '0';
+		-- default values -- 
+			nextstate <= currstate;
+			enBMemWrite0 			<= '1';
+			writeEnBMemWrite0		<= '0';
+			enBMemWrite1 			<= '0';
+			writeEnBMemWrite1		<= '0';
+			selectMuxDataIn 		<= '0';
+			selectMuxMemWriteAdr 	<= '0';
+			start_level0			<= '0';
+			restart_level0			<= '0';
+			operSimple				<= '0';
 
 		case currstate is
 
@@ -133,7 +135,6 @@ begin
 	
 				if oper="10" then -- primeiro passo da abertura
 					enBMemWrite1 			<= '1';			
-					writeEnBMemWrite0		<= '0';
 					writeEnBMemWrite1		<= '1';
 					selectMuxDataIn 		<= '0';
 					selectMuxMemWriteAdr 	<= '0';
@@ -148,7 +149,6 @@ begin
 				if oper="11" then -- segundo passo do fecho
 					enBMemWrite1 			<= '1';			
 					writeEnBMemWrite0		<= '1';
-					writeEnBMemWrite1		<= '0';
 					selectMuxDataIn 		<= '1';
 					selectMuxMemWriteAdr 	<= '1';
 					start_level0 			<= '1';
@@ -170,7 +170,7 @@ begin
 					end if;
 				end if;
 
-				if oper="11" then -- primeiro passo da abertura
+				if oper="11" then -- primeiro passo do fecho
 					enBMemWrite1 			<= '1';			
 					writeEnBMemWrite1		<= '1';
 					selectMuxDataIn 		<= '0';
@@ -180,11 +180,10 @@ begin
 					if done='1' then
 						nextstate <= s_erosao;
 						writeEnBMemWrite1		<= '0';
-						restart_level0 <= '1';
 					end if;
 				end if;
 
-				if oper="10" then -- segundo passo do fecho
+				if oper="10" then -- segundo passo da abertura
 					enBMemWrite1 			<= '1';			
 					writeEnBMemWrite0		<= '1';
 					selectMuxDataIn 		<= '1';

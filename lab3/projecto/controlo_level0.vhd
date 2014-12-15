@@ -35,6 +35,7 @@ architecture Behavioral of controlo_level0 is
 	
 	-- counter signals --
 	signal count : std_logic_vector (9 downto 0); 						-- tem que ter o mesmo tamanho do endereco do porto B
+	signal reset_count : std_logic := '0';
 	signal enCount, endCount, endRow, endLast : std_logic;
 	constant countEND : std_logic_vector (9 downto 0) := "1000000011"; 	-- determina quando termina a contagem (512 enderecos + 4) - 1 = 515
 	constant rowEND : std_logic_vector (1 downto 0) := "11";			-- determina quando termina uma linha
@@ -46,7 +47,7 @@ begin
 	endLast <= '1' when count = lastEND else '0';
 	process (clk, rst) 
 	begin
-		if rst='1' then 
+		if rst='1' or reset_count='1' then 
 			count <= (others => '0');
 		elsif clk='1' and clk'event then
 			if enCount='1' then
@@ -83,10 +84,12 @@ begin
 		selectMuxOper <= '0';
 		enRegResult <= '0';
 		enCount <= '0';
+		reset_count <= '0';
 	
 		case currstate is
 			when s_initial => -- comea o processamento se o sinal start ficar a high
 				if start='1' then
+					reset_count <= '1';
 					nextstate <= s_first ;
 				end if;
 			
@@ -149,6 +152,7 @@ begin
 
 			when s_end => -- terminou a execucaoo, idle
 				done <= '1';
+				nextstate <= s_initial;
 				
 		end case;
 	end process;
