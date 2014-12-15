@@ -148,7 +148,7 @@ begin
 
 					if done='1' then
 						nextstate <= s_dilatacao;
-						writeEnBMemWrite1 <= '0';
+						--writeEnBMemWrite1 <= '0';
 					end if;
 				end if;
 
@@ -161,7 +161,7 @@ begin
 
 					if done='1' then
 						nextstate <= s_end;
-						writeEnBMemWrite0 <= '0';
+						--writeEnBMemWrite0 <= '0';
 					end if;
 				end if;
 
@@ -185,7 +185,7 @@ begin
 
 					if done='1' then
 						nextstate <= s_erosao;
-						writeEnBMemWrite1		<= '0';
+						--writeEnBMemWrite1		<= '0';
 					end if;
 				end if;
 
@@ -198,7 +198,7 @@ begin
 
 					if done='1' then
 						nextstate <= s_end;
-						writeEnBMemWrite0 <= '0';
+						--writeEnBMemWrite0 <= '0';
 					end if;
 				end if;
 
