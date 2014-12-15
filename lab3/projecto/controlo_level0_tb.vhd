@@ -2,15 +2,15 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   18:31:30 12/13/2014
+-- Create Date:   11:37:17 12/15/2014
 -- Design Name:   
--- Module Name:   /home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P3/PSD/Imagens/usb2bram_tb.vhd
+-- Module Name:   /home/david/Dropbox/IST/Ano4/Semestre1/PSD/Labs/P3/PSD/Imagens/controlo_level0_tb.vhd
 -- Project Name:  Imagens
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
 -- 
--- VHDL Test Bench Created by ISE for module: usb2bram
+-- VHDL Test Bench Created by ISE for module: controlo_level0
 -- 
 -- Dependencies:
 -- 
@@ -32,44 +32,48 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY usb2bram_tb IS
-END usb2bram_tb;
+ENTITY controlo_level0_tb IS
+END controlo_level0_tb;
  
-ARCHITECTURE behavior OF usb2bram_tb IS 
+ARCHITECTURE behavior OF controlo_level0_tb IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
-    COMPONENT usb2bram
+    COMPONENT controlo_level0
     PORT(
          start : IN  std_logic;
-         rst : IN  std_logic;
          clk : IN  std_logic;
-         oper : IN  std_logic;
-         adrBMemRead_out : OUT  std_logic_vector(8 downto 0);
-         dataInBMemRead_out : OUT  std_logic_vector(31 downto 0);
-         regRead_out : OUT  std_logic_vector(127 downto 0);
-         regRiPrevious_out : OUT  std_logic_vector(127 downto 0);
-         regRiCurrent_out : OUT  std_logic_vector(127 downto 0);
-         regRiNext_out : OUT  std_logic_vector(127 downto 0);
-         regResult_out : OUT  std_logic_vector(127 downto 0)
+         rst : IN  std_logic;
+         done : OUT  std_logic;
+         adrBMemRead : OUT  std_logic_vector(8 downto 0);
+         enBMemRead : OUT  std_logic;
+         writeEnBMemRead : OUT  std_logic;
+         enRegRead : OUT  std_logic_vector(2 downto 0);
+         enRegRiPrevious : OUT  std_logic;
+         enRegRiCurrent : OUT  std_logic;
+         enRegRiNext : OUT  std_logic;
+         selectMuxOper : OUT  std_logic;
+         enRegResult : OUT  std_logic
         );
     END COMPONENT;
     
 
    --Inputs
    signal start : std_logic := '0';
-   signal rst : std_logic := '0';
    signal clk : std_logic := '0';
-   signal oper : std_logic := '0';
+   signal rst : std_logic := '0';
 
  	--Outputs
-   signal adrBMemRead_out : std_logic_vector(8 downto 0);
-   signal dataInBMemRead_out : std_logic_vector(31 downto 0);
-   signal regRead_out : std_logic_vector(127 downto 0);
-   signal regRiPrevious_out : std_logic_vector(127 downto 0);
-   signal regRiCurrent_out : std_logic_vector(127 downto 0);
-   signal regRiNext_out : std_logic_vector(127 downto 0);
-   signal regResult_out : std_logic_vector(127 downto 0);
+   signal done : std_logic;
+   signal adrBMemRead : std_logic_vector(8 downto 0);
+   signal enBMemRead : std_logic;
+   signal writeEnBMemRead : std_logic;
+   signal enRegRead : std_logic_vector(2 downto 0);
+   signal enRegRiPrevious : std_logic;
+   signal enRegRiCurrent : std_logic;
+   signal enRegRiNext : std_logic;
+   signal selectMuxOper : std_logic;
+   signal enRegResult : std_logic;
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -77,18 +81,20 @@ ARCHITECTURE behavior OF usb2bram_tb IS
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
-   uut: usb2bram PORT MAP (
+   uut: controlo_level0 PORT MAP (
           start => start,
-          rst => rst,
           clk => clk,
-          oper => oper,
-          adrBMemRead_out => adrBMemRead_out,
-          dataInBMemRead_out => dataInBMemRead_out,
-          regRead_out => regRead_out,
-          regRiPrevious_out => regRiPrevious_out,
-          regRiCurrent_out => regRiCurrent_out,
-          regRiNext_out => regRiNext_out,
-          regResult_out => regResult_out
+          rst => rst,
+          done => done,
+          adrBMemRead => adrBMemRead,
+          enBMemRead => enBMemRead,
+          writeEnBMemRead => writeEnBMemRead,
+          enRegRead => enRegRead,
+          enRegRiPrevious => enRegRiPrevious,
+          enRegRiCurrent => enRegRiCurrent,
+          enRegRiNext => enRegRiNext,
+          selectMuxOper => selectMuxOper,
+          enRegResult => enRegResult
         );
 
    -- Clock process definitions
@@ -110,7 +116,7 @@ BEGIN
       wait for clk_period*10;
 
       -- insert stimulus here 
-		oper <= '1';
+		oper <= "10";
 		
 		rst <= '1' after 0 ns;
 		rst <= '0' after clk_period;

@@ -6,7 +6,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity circuito is
 	port( 
 		start, rst, clk	: in std_logic;
-		oper					: in std_logic_vector(1 downto 0);
+		oper					: in std_logic_vector(2 downto 0);
 
 		-- memorias --
 		adrBMemRead_out : out std_logic_vector(8 downto 0);
@@ -78,6 +78,7 @@ architecture Structural of circuito is
 
 	-- selects dos muxes--
 	signal selectMuxOper	 : std_logic := '0';									-- select do mux que identifica a operacao a realizar 
+	signal selectMuxDiff	 : std_logic := '0';
 
 	signal datapath_in		 : std_logic_vector (31 downto 0); 						-- entrada de dados da datapath
 	signal adrWithDelay		 : std_logic_vector (8 downto 0);						-- endereco com delay
@@ -90,7 +91,7 @@ architecture Structural of circuito is
 	signal selectMuxMemWriteAdr	: std_logic := '0';									-- select do mux que seleciona a origem do endereco da memoria de escrita 1
 
 	-- registo de controlo entre a UC e a datapath --
-	signal regControl : std_logic_vector(17 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
+	signal regControl : std_logic_vector(18 downto 0) := (others => '0');			-- registo de controlo entre a datapath e a UC
 	
 	----------------------------
 	-- Component Declarations --
@@ -122,6 +123,7 @@ architecture Structural of circuito is
 			enRegRiNext			: in std_logic;
 			enRegResult			: in std_logic;
 			selectMuxOper		: in std_logic;
+			selectMuxDiff		: in std_logic;
 			regRead_out 		: out std_logic_vector(127 downto 0); --APAGAR--
 			regRiPrevious_out	: out std_logic_vector(127 downto 0); --APAGAR--
 			regRiCurrent_out	: out std_logic_vector(127 downto 0); --APAGAR--
@@ -137,8 +139,9 @@ architecture Structural of circuito is
 	component controlo_level1
 		Port (
 			start, clk, rst			: in  std_logic;
-			oper					: in std_logic_vector(1 downto 0);
+			oper					: in std_logic_vector(2 downto 0);
 			operSimple				: out std_logic;
+			selectMuxDiff			: out std_logic;						-- select do mux que indica se se pretende fazer uma diferenca do resultado com a original
 			adrBMemRead				: out std_logic_vector(8 downto 0);
 			enBMemRead 				: out std_logic;
 			writeEnBMemRead 		: out std_logic;
@@ -220,6 +223,7 @@ begin
 		enRegRiCurrent => regControl(4),
 		enRegRiNext => regControl(5),
 		selectMuxOper => regControl(6),
+		selectMuxDiff => regControl(18),
 		enRegResult => regControl(7),
 		regRead_out => regRead_out,
 		regRiPrevious_out => regRiPrevious_out,
@@ -236,7 +240,7 @@ begin
 	process(clk)
 	begin
 		if clk'event and clk='1' then
-			regControl <= operSimple & adrBMemRead & enRegResult & selectMuxOper & enRegRiNext & enRegRiCurrent & enRegRiPrevious & enRegRead;
+			regControl <= selectMuxDiff & operSimple & adrBMemRead & enRegResult & selectMuxOper & enRegRiNext & enRegRiCurrent & enRegRiPrevious & enRegRead;
 		end if;
 	end process;
 
@@ -246,6 +250,7 @@ begin
 		rst => rst,
 		oper => oper,
 		operSimple => operSimple,
+		selectMuxDiff => selectMuxDiff,
 		adrBMemRead => adrBMemRead,
 		enBMemRead => enBMemRead,
 		writeEnBMemRead => writeEnBMemRead,

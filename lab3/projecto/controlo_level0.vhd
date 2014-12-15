@@ -45,7 +45,7 @@ begin
 	endCount <= '1' when count = countEND else '0';
 	endRow <= '1' when count(1 downto 0) = rowEND else '0';
 	endLast <= '1' when count = lastEND else '0';
-	process (clk, rst) 
+	process (clk, rst, reset_count) 
 	begin
 		if rst='1' or reset_count='1' then 
 			count <= (others => '0');

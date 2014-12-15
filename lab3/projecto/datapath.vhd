@@ -10,8 +10,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity datapath is
 	Port ( 
-		clk	 				: in std_logic;
-		oper				: in std_logic;						-- (dilatacao = 1 / erosao = 0)
+		clk 		: in std_logic;
+		oper			: in std_logic;					-- (dilatacao = 1 / erosao = 0)
 
 		-- enables --
 		enRegRead 		: in std_logic_vector(2 downto 0);	-- enables dos registos de entrada
@@ -22,6 +22,7 @@ entity datapath is
 
 		-- selects --
 		selectMuxOper	: in std_logic;						-- select do mux que identifica a operacao a realizar
+		selectMuxDiff	: in std_logic;						-- select do mux que indica se se pretende fazer uma diferenca do resultado com a original
 
 		-- saidas dos registos --
 		regRead_out 		: out std_logic_vector(127 downto 0); --APAGAR--
@@ -41,7 +42,7 @@ entity datapath is
 end datapath;
 
 architecture Behavioral of datapath is
-	
+
 	-- registos de entrada --
 	signal regR0		: std_logic_vector(31 downto 0):= (others => '0');	-- registo de leitura com os bits 127-96 da linha a ser lida
 	signal regR1		: std_logic_vector(31 downto 0):= (others => '0');	-- registo de leitura com os bits 95-64 da linha a ser lida
@@ -58,6 +59,8 @@ architecture Behavioral of datapath is
 	signal operExtended			: std_logic_vector(127 downto 0); -- sinal de operao extendido
 	signal expansionLogic_out	: std_logic_vector(127 downto 0); -- saida da logica para a dilatacao (expansion)
 	signal contractionLogic_out : std_logic_vector(127 downto 0); -- saida da logica para a erosao (contraction)
+	signal logic_out 			: std_logic_vector(127 downto 0); -- sinal de saida da logica depois de selcionada a operacao
+	signal different			: std_logic_vector(127 downto 0); -- sinal com a diferenca da linha original e a linha processada
 
 	-- entradas de registos--
 	signal regRiNext_in	: std_logic_vector(127 downto 0);
@@ -213,13 +216,15 @@ begin
 							 		   regRiNext(k-1) and regRiNext(k);
 		end generate right;
 	end generate logic;
+	
+	-- mux que seleciona qual dos resultados da logica a passsarem para a saida da logica --
+	logic_out <= expansionLogic_out when oper='1' else contractionLogic_out;
 
-	-- mux de selecao de qual dos resultados a guardar no registo de resultado --
-	with oper select
-		regResult_in <= expansionLogic_out when '1',
-					  contractionLogic_out when '0',
-					  X"00000000000000000000000000000000" when others;
+	-- diferenca entre a linha original e o resultado da linha processada --
+	different <= regRiCurrent xor logic_out;
 
+	-- mux que seleciona se se guarda o resultado da logica ou a diferenca de linha original e da processada --
+	regResult_in <= different when selectMuxDiff='1' else logic_out;
 
 	-- registo com o resultado --
 	process(clk)
@@ -230,12 +235,6 @@ begin
 			end if;
 		end if;
 	end process;
-
-	regRead_out <= regRead;
-	regRiPrevious_out <= regRiPrevious;
-	regRiCurrent_out <= regRiCurrent;
-	regRiNext_out <= regRiNext;
-	regResult_out	<= regResult;
 	
 	-- mux para o dataout
 	selectMuxOut <= counterDelay(9)(1 downto 0);
@@ -245,6 +244,13 @@ begin
 					regResult(63 downto 32) when "10",
 					regResult(31 downto 0) when "11",
 					X"00000000" when others;
+
+	-- APAGAR --
+	regRead_out <= regRead;
+	regRiPrevious_out <= regRiPrevious;
+	regRiCurrent_out <= regRiCurrent;
+	regRiNext_out <= regRiNext;
+	regResult_out	<= regResult;
 	
 end Behavioral;
 

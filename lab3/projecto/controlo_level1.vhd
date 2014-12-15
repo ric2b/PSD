@@ -10,10 +10,11 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity controlo_level1 is
 	Port (
 		start, clk, rst : in  std_logic;
-		oper : in std_logic_vector(1 downto 0);
+		oper : in std_logic_vector(2 downto 0);
 
 		-- bits de controlo derivados do oper
 		operSimple : out std_logic;
+		selectMuxDiff	: out std_logic;						-- select do mux que indica se se pretende fazer uma diferenca do resultado com a original
 
 		-- bits de controlo_level1 da memoria de leitura --
 		adrBMemRead		: out std_logic_vector(8 downto 0);
@@ -108,6 +109,7 @@ begin
 			start_level0			<= '0';
 			restart_level0			<= '0';
 			operSimple				<= '0';
+			selectMuxDiff <= '0';
 
 		case currstate is
 
@@ -124,7 +126,11 @@ begin
 			when s_erosao =>
 				operSimple				<= '0';
 				
-				if oper="00" then -- erosao simples		
+				if oper(2) = '1' then
+					selectMuxDiff <= '1';
+				end if;
+
+				if oper(1 downto 0)="00" then -- erosao simples		
 					writeEnBMemWrite0		<= '1';
 					start_level0 			<= '1';
 					if done='1' then
@@ -133,7 +139,7 @@ begin
 					end if;
 				end if;
 	
-				if oper="10" then -- primeiro passo da abertura
+				if oper(1 downto 0)="10" then -- primeiro passo da abertura
 					enBMemWrite1 			<= '1';			
 					writeEnBMemWrite1		<= '1';
 					selectMuxDataIn 		<= '0';
@@ -146,7 +152,7 @@ begin
 					end if;
 				end if;
 
-				if oper="11" then -- segundo passo do fecho
+				if oper(1 downto 0)="11" then -- segundo passo do fecho
 					enBMemWrite1 			<= '1';			
 					writeEnBMemWrite0		<= '1';
 					selectMuxDataIn 		<= '1';
@@ -162,7 +168,7 @@ begin
 			when s_dilatacao =>
 				operSimple				<= '1';
 				
-				if oper="01" then -- dilatacao simples								
+				if oper(1 downto 0)="01" then -- dilatacao simples								
 					writeEnBMemWrite0		<= '1';
 					start_level0 			<= '1';
 					if done='1' then
@@ -170,7 +176,7 @@ begin
 					end if;
 				end if;
 
-				if oper="11" then -- primeiro passo do fecho
+				if oper(1 downto 0)="11" then -- primeiro passo do fecho
 					enBMemWrite1 			<= '1';			
 					writeEnBMemWrite1		<= '1';
 					selectMuxDataIn 		<= '0';
@@ -183,7 +189,7 @@ begin
 					end if;
 				end if;
 
-				if oper="10" then -- segundo passo da abertura
+				if oper(1 downto 0)="10" then -- segundo passo da abertura
 					enBMemWrite1 			<= '1';			
 					writeEnBMemWrite0		<= '1';
 					selectMuxDataIn 		<= '1';
