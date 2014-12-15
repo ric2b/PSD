@@ -23,13 +23,6 @@ entity datapath is
 		-- selects --
 		selectMuxOper	: in std_logic;						-- select do mux que identifica a operacao a realizar
 		selectMuxDiff	: in std_logic;						-- select do mux que indica se se pretende fazer uma diferenca do resultado com a original
-
-		-- saidas dos registos --
-		regRead_out 		: out std_logic_vector(127 downto 0); --APAGAR--
-		regRiPrevious_out	: out std_logic_vector(127 downto 0); --APAGAR--
-		regRiCurrent_out	: out std_logic_vector(127 downto 0); --APAGAR--
-		regRiNext_out		: out std_logic_vector(127 downto 0); --APAGAR--
-		regResult_out		: out std_logic_vector(127 downto 0); --APAGAR--
 		
 		-- enderecos da memoria de escrita --
 		adrBMemRead		: in std_logic_vector(8 downto 0);
@@ -244,13 +237,6 @@ begin
 					regResult(63 downto 32) when "10",
 					regResult(31 downto 0) when "11",
 					X"00000000" when others;
-
-	-- APAGAR --
-	regRead_out <= regRead;
-	regRiPrevious_out <= regRiPrevious;
-	regRiCurrent_out <= regRiCurrent;
-	regRiNext_out <= regRiNext;
-	regResult_out	<= regResult;
 	
 end Behavioral;
 

@@ -10,14 +10,7 @@ entity circuito is
 
 		-- memorias --
 		adrBMemRead_out : out std_logic_vector(8 downto 0);
-		dataInBMemRead_out : out std_logic_vector (31 downto 0);
-
-		-- saidas dos registos --
-		regRead_out 		: out std_logic_vector(127 downto 0);
-		regRiPrevious_out	: out std_logic_vector(127 downto 0);
-		regRiCurrent_out	: out std_logic_vector(127 downto 0);
-		regRiNext_out		: out std_logic_vector(127 downto 0);
-		regResult_out			: out std_logic_vector(127 downto 0)
+		dataInBMemRead_out : out std_logic_vector (31 downto 0)
 	);
 end circuito;
 
@@ -124,11 +117,6 @@ architecture Structural of circuito is
 			enRegResult			: in std_logic;
 			selectMuxOper		: in std_logic;
 			selectMuxDiff		: in std_logic;
-			regRead_out 		: out std_logic_vector(127 downto 0); --APAGAR--
-			regRiPrevious_out	: out std_logic_vector(127 downto 0); --APAGAR--
-			regRiCurrent_out	: out std_logic_vector(127 downto 0); --APAGAR--
-			regRiNext_out		: out std_logic_vector(127 downto 0); --APAGAR--
-			regResult_out		: out std_logic_vector(127 downto 0); --APAGAR--
 			adrBMemRead			: in std_logic_vector(8 downto 0);
 			adrBMemWrite		: out std_logic_vector(8 downto 0);
 			dataIn 				: in  std_logic_vector (31 downto 0);
@@ -225,11 +213,6 @@ begin
 		selectMuxOper => regControl(6),
 		selectMuxDiff => regControl(18),
 		enRegResult => regControl(7),
-		regRead_out => regRead_out,
-		regRiPrevious_out => regRiPrevious_out,
-		regRiCurrent_out => regRiCurrent_out,
-		regRiNext_out => regRiNext_out,
-		regResult_out	=> regResult_out,
 		adrBMemRead => regControl(16 downto 8),
 		adrBMemWrite => adrWithDelay,
 		datain => datapath_in,
