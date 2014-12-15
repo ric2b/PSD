@@ -5,12 +5,16 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity circuito is
 	port( 
-		start, rst, clk	: in std_logic;
-		oper					: in std_logic_vector(2 downto 0);
-
-		-- memorias --
-		adrBMemRead_out : out std_logic_vector(8 downto 0);
-		dataInBMemRead_out : out std_logic_vector (31 downto 0)
+		start, rst, clk, clkA	: in std_logic;
+		oper					: in std_logic_vector(2 downto 0);		-- sinal que indica a operacao
+		adrAMemRead_in			: in std_logic_vector(10 downto 0);		-- endereco de dados da memoria de leitura (porto A)
+		dataInAMemRead_in		: in std_logic_vector(7 downto 0);		-- dados de entrada da memoria de leitura (porto A)
+		writeEnAMemRead			: in std_logic;
+		enAMem 					: in std_logic;
+		adrAMemWrite0_in 		: in std_logic_vector(10 downto 0);		-- endereco de dados da memoria de escrita (porto A)
+		dataOutAMemWrite0_out 	: out std_logic_vector (7 downto 0); 	-- dados de saida da memoria de escrita (porta A)
+		datain 					: out std_logic_vector(31 downto 0);
+		dataout 				: out std_logic_vector(31 downto 0)
 	);
 end circuito;
 
@@ -24,24 +28,24 @@ architecture Structural of circuito is
 	signal datapathResult 	: std_logic_vector(31 downto 0); 
 
 	-- sinais de ligacao da memoria de leitura --
-	signal adrAMemRead 		 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de leitura
-	signal dataInAMemRead	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de entrada do porto A da memoria de leitura
-	signal dataOutAMemRead	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de saida do porto A da memoria de leitura
-	signal enAMemRead		 : std_logic := '0';									-- enable da memoria de leitura
-	signal writeEnAMemRead	 : std_logic := '0';									-- write enable da memoria de leitura
+	--signal adrAMemRead 		 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de leitura
+	--signal dataInAMemRead	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de entrada do porto A da memoria de leitura
+	--signal dataOutAMemRead	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de saida do porto A da memoria de leitura
+	--signal enAMemRead		 : std_logic := '0';									-- enable da memoria de leitura
+	--signal writeEnAMemRead	 : std_logic := '0';									-- write enable da memoria de leitura
 
 	signal adrBMemRead 		 : std_logic_vector(8 downto 0) := (others => '0');		-- endereco porto B da memoria de leitura
-	signal dataInBMemRead	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de entrada do porto B da memoria de leitura
+	--signal dataInBMemRead	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de entrada do porto B da memoria de leitura
 	signal dataOutBMemRead	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de saida do porto B da memoria de leitura
 	signal enBMemRead		 : std_logic := '0';									-- enable da memoria de leitura
 	signal writeEnBMemRead	 : std_logic := '0';									-- write enable da memoria de leitura
 
 	-- sinais de ligacao da memoria de escrita 0 --
 --	signal adrAMemWrite0	 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de escrita 0
-	signal dataInAMemWrite0	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de entrada do porto A da memoria de escrita 0
-	signal dataOutAMemWrite0 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de saida do porto A da memoria de escrita 0
-	signal enAMemWrite0		 : std_logic := '0';									-- enable da memoria de escrita 0
-	signal writeEnAMemWrite0 : std_logic := '0';									-- write enable da memoria de escrita 0
+	--signal dataInAMemWrite0	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de entrada do porto A da memoria de escrita 0
+	--signal dataOutAMemWrite0 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de saida do porto A da memoria de escrita 0
+	--signal enAMemWrite0		 : std_logic := '0';									-- enable da memoria de escrita 0
+	--signal 'writeEnAMemWrite0' : std_logic := '0';									-- write enable da memoria de escrita 0
 
 	signal adrBMemWrite0 	 : std_logic_vector(8 downto 0) := (others => '0');		-- endereco porto B da memoria de escrita 0
 --	signal dataInBMemWrite0	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de entrada do porto B da memoria de escrita 0
@@ -51,10 +55,10 @@ architecture Structural of circuito is
 
 	-- sinais de ligacao da memoria de escrita 1 --
 --	signal adrAMemWrite1	 : std_logic_vector(10 downto 0) := (others => '0');	-- endereco porto A da memoria de escrita 1
-	signal dataInAMemWrite1	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de entrada do porto A da memoria de escrita 1
-	signal dataOutAMemWrite1 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de saida do porto A da memoria de escrita 1
-	signal enAMemWrite1		 : std_logic := '0';									-- enable da memoria de escrita 1
-	signal writeEnAMemWrite1 : std_logic := '0';									-- write enable da memoria de escrita 1
+	--signal dataInAMemWrite1	 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de entrada do porto A da memoria de escrita 1
+	--signal dataOutAMemWrite1 : std_logic_vector(7 downto 0) := (others => '0');		-- dados de saida do porto A da memoria de escrita 1
+	--signal enAMemWrite1		 : std_logic := '0';									-- enable da memoria de escrita 1
+	--signal writeEnAMemWrite1 : std_logic := '0';									-- write enable da memoria de escrita 1
 
 	signal adrBMemWrite1 	 : std_logic_vector(8 downto 0) := (others => '0');		-- endereco porto B da memoria de escrita 1
 --	signal dataInBMemWrite1	 : std_logic_vector(31 downto 0) := (others => '0');	-- dados de entrada do porto B da memoria de escrita 1
@@ -151,34 +155,34 @@ architecture Structural of circuito is
 begin
 	-- component instantiations
 	Inst_BlockRam_Read : BlockRam port map (
-		adrA   => adrAMemRead,
+		adrA   => adrAMemRead_in,
 		adrB   => adrBMemRead,
-		busDiA => dataInAMemRead,
-		busDiB => dataInBMemRead,
-		clkA   => clk,
+		busDiA => dataInAMemRead_in,
+		busDiB => X"00000000",
+		clkA   => clkA,
 		clkB   => clk,
-		ctlEnA => enAMemRead,
+		ctlEnA => enAMem,
 		ctlEnB => enBMemRead,
 		ctlWeA => writeEnAMemRead,
 		ctlWeB => writeEnBMemRead,
-		busDoA => dataOutAMemRead,
+		busDoA => open,
 		busDoB => dataOutBMemRead
 	);
 	
 	adrBMemWrite0 <= adrWithDelay;
 
 	Inst_BlockRam_Write0 : BlockRam port map (
-		adrA   => "00000000000",
+		adrA   => adrAMemWrite0_in,
 		adrB   => adrBMemWrite0,
-		busDiA => dataInAMemWrite0,
+		busDiA => "00000000",
 		busDiB => datapathResult,
-		clkA   => clk,
+		clkA   => clkA,
 		clkB   => clk,
-		ctlEnA => enAMemWrite0,
+		ctlEnA => enAMem,
 		ctlEnB => enBMemWrite0,
-		ctlWeA => writeEnAMemWrite0,
+		ctlWeA => '0',
 		ctlWeB => writeEnBMemWrite0,
-		busDoA => dataOutAMemWrite0,
+		busDoA => dataOutAMemWrite0_out,
 		busDoB => dataOutBMemWrite0
 	);
 
@@ -188,15 +192,15 @@ begin
 	Inst_BlockRam_Write1 : BlockRam port map (
 		adrA   => "00000000000",
 		adrB   => adrBMemWrite1,
-		busDiA => dataInAMemWrite1,
+		busDiA => "00000000",
 		busDiB => datapathResult,
-		clkA   => clk,
+		clkA   => clkA,
 		clkB   => clk,
-		ctlEnA => enAMemWrite1,
+		ctlEnA => '0',
 		ctlEnB => enBMemWrite1,
-		ctlWeA => writeEnAMemWrite1,
+		ctlWeA => '0',
 		ctlWeB => writeEnBMemWrite1,
-		busDoA => dataOutAMemWrite1,
+		busDoA => open,
 		busDoB => dataOutBMemWrite1
 	);
 
@@ -251,7 +255,7 @@ begin
 		selectMuxMemWriteAdr => selectMuxMemWriteAdr
 	);
 	
-	adrBMemRead_out <= adrBMemRead;
-	dataInBMemRead_out <= dataOutBMemRead;
+	datain <= dataOutBMemRead;
+	dataout <= dataOutBMemWrite0;
 
 end Structural;
