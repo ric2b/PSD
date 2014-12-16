@@ -1,5 +1,5 @@
 import sys
-ignoreFirst = 50
+ignoreFirst = 50 #the first 50 bytes of the pbm file are discarded
 
 def check_args():
 	""" checks if a file was supplied to the script """
@@ -23,4 +23,4 @@ newFile = open(filename + ".bit", "wb")
 newFile.write(bytes_read[ignoreFirst:])
 newFile.close()
 
-print filename + " was converted."
+print filename + " was converted. (WOLOLO)"
