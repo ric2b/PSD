@@ -9,7 +9,7 @@ destinationFolder = "bit"
 program_name = "python converter.py"
 arguments = ""
 
-
+# files ending on .bit or .exclude are ignored
 files = list(set(glob.glob(originFolder + "/*")) - set(glob.glob(originFolder + "/*.bit")) - set(glob.glob(originFolder + "/*.exclude")))
 prefix_lenght = len(originFolder + "/")
 
@@ -21,4 +21,4 @@ for filename in files:
 	shutil.move(originFolder + "/" + filename + ".bit", destinationFolder + "/" + filename + ".bit")
 
 print
-print program_name + " was ran for all files in the directory " + originFolder		
+print program_name + " was run for all files in the directory " + originFolder		
