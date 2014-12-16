@@ -1,5 +1,5 @@
 import sys
-ignoreFirst = 50 #the first 50 bytes of the pbm file are discarded
+ignoreFirst = 50 #the first 50 bytes of the pbm file are discarded, 11 for PhotoShop files
 
 def check_args():
 	""" checks if a file was supplied to the script """

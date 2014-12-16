@@ -6,7 +6,7 @@ import filecmp
 
 originFolder = "pbm"
 destinationFolder = "bit"
-program_name = "python converter.py"
+program_name = "python remove_header.py"
 arguments = ""
 
 # files ending on .bit or .exclude are ignored
