@@ -1,5 +1,6 @@
 import sys
 header = "P4\n128\n128\n"
+extensionLenght = 4
 
 def check_args():
 	""" checks if a file was supplied to the script """
@@ -11,6 +12,7 @@ def check_args():
 
 
 filename = check_args()
+filenameNoExtension = filename[0:(len(filename)-extensionLenght)]
 
 try:
 	f = open(filename, 'r')
@@ -19,7 +21,7 @@ except IOError:
 	exit()
 
 bytes_read = open(filename, "rb").read()
-newFile = open(filename + ".pbm", "wb")
+newFile = open(filenameNoExtension + ".pbm", "wb")
 newFile.write((header).encode('ascii'))
 newFile.write(bytes_read)
 newFile.close()

@@ -1,5 +1,6 @@
 import sys
-ignoreFirst = 50 #the first 50 bytes of the pbm file are discarded, 11 for PhotoShop files
+ignoreFirst = 11 #the first 50 bytes of the pbm file are discarded, 11 for PhotoShop files
+extensionLenght = 4
 
 def check_args():
 	""" checks if a file was supplied to the script """
@@ -11,6 +12,7 @@ def check_args():
 
 
 filename = check_args()
+filenameNoExtension = filename[0:(len(filename)-extensionLenght)]
 
 try:
 	f = open(filename, 'r')
@@ -19,7 +21,7 @@ except IOError:
 	exit()
 
 bytes_read = open(filename, "rb").read()
-newFile = open(filename + ".bit", "wb")
+newFile = open(filenameNoExtension + ".bit", "wb")
 newFile.write(bytes_read[ignoreFirst:])
 newFile.close()
 
