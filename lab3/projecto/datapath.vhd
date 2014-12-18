@@ -55,7 +55,7 @@ architecture Behavioral of datapath is
 	signal logic_out 			: std_logic_vector(127 downto 0); -- sinal de saida da logica depois de selcionada a operacao
 	signal different			: std_logic_vector(127 downto 0); -- sinal com a diferenca da linha original e a linha processada
 
-	-- inversão dos bits da linha 
+	-- inversao dos bits da linha 
 	signal dataInInverted	: std_logic_vector(31 downto 0);
 	signal dataOutInverted	: std_logic_vector(31 downto 0);
 
@@ -91,11 +91,11 @@ begin
 	
 	adrBMemWrite <= counterDelay(9);
 	
-
-	dataInInverted <= datain(7 downto 0) & datain(15 downto 8) & datain(23 downto 16) & datain(31 downto 24);
 	-----------------------
 	--Registos de Leitura--
 	-----------------------
+	dataInInverted <= datain(7 downto 0) & datain(15 downto 8) & datain(23 downto 16) & datain(31 downto 24);
+	
 	-- registo R0 --
 	process(clk)
 	begin
@@ -132,7 +132,8 @@ begin
 		if clk'event and clk='1' then
 			if enRegRead="111" then
 --				regRead <= regR0 & regR1 & regR2 & datain;
-				regRead <= dataInInverted & regR2 & regR1 & regR0;
+				regRead <= regR0 & regR1 & regR2 & dataInInverted;
+--				regRead <= dataInInverted & regR2 & regR1 & regR0;
 			end if;
 		end if;
 	end process;
@@ -239,12 +240,19 @@ begin
 	-- mux para o dataout
 	selectMuxOut <= counterDelay(9)(1 downto 0);
 	with selectMuxOut select
-		dataOutInverted <=  regResult(127 downto 96) when "11", -- Don't worry, the when's were flipped
-					regResult(95 downto 64) when "10", -- I'm serious, trust me
-					regResult(63 downto 32) when "01", -- But if you want to check it won't hurt 
-					regResult(31 downto 0) when "00", -- See, what did I tell you? 
-					X"00000000" when others;
+--		dataOutInverted <=  	regResult(127 downto 96) when "11", -- Don't worry, the when's were flipped
+--									regResult(95 downto 64) when "10", -- I'm serious, trust me
+--									regResult(63 downto 32) when "01", -- But if you want to check it won't hurt
+--									regResult(31 downto 0) when "00", -- See, what did I tell you?
+--									X"00000000" when others;
+		dataOutInverted <= 	regResult(127 downto 96) when "00",
+									regResult(95 downto 64) when "01",
+									regResult(63 downto 32) when "10",
+									regResult(31 downto 0) when "11",
+									X"00000000" when others;
 	
-	dataout <= dataOutInverted;
+	dataout <= dataOutInverted(7 downto 0) & dataOutInverted(15 downto 8) & dataOutInverted(23 downto 16)
+					& dataOutInverted(31 downto 24);
+					
 end Behavioral;
 
