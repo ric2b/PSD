@@ -88,7 +88,7 @@ architecture Structural of usb2bram is
   --signal adrB1, adrB2, adrB1cnt, adrB2cnt  : std_logic_vector (10 downto 0);
   --signal dataB1, dataB2, dataB2in : std_logic_vector (7 downto 0);
 
-  signal clk_disp7, clk_fast : std_logic;
+  signal clk_disp7, clk_fast, clk_div : std_logic;
   --signal write_enable, is_executing, not_executing : std_logic;
   
 -- component declarations
@@ -165,7 +165,16 @@ architecture Structural of usb2bram is
       dataout           : out std_logic_vector(31 downto 0)
     );
   end component;
-
+    
+	component clkDCM is
+		port ( CLKIN_IN        : in    std_logic; 
+				 RST_IN          : in    std_logic; 
+				 CLKFX_OUT       : out   std_logic; 
+				 CLKIN_IBUFG_OUT : out   std_logic; 
+				 CLK0_OUT        : out   std_logic; 
+				 LOCKED_OUT      : out   std_logic);
+	end component;
+	
 begin
 
 -- component instantiations
@@ -231,11 +240,20 @@ begin
     );
 
   inst_clkdiv: clkdiv port map(
-    clk => mclk,
-    clk50m => clk_fast,
+    clk => clk_div,
+    clk50m => open,
     clk10hz => open,
     clk_disp => clk_disp7
     );
+	 
+  inst_clkDCM: clkDCM port map( 
+		CLKIN_IN => mclk,
+		RST_IN => btn(0),
+		CLKFX_OUT => clk_fast,
+		CLKIN_IBUFG_OUT => open,
+		CLK0_OUT => clk_div,
+		LOCKED_OUT => open
+		);
 
   -- 6 leftmost leds show the 6 lower bits of the adress counter.
   led <= "11111111";

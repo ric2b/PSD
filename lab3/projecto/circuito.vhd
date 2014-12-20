@@ -205,6 +205,13 @@ begin
 	);
 
 	-- mux de selecao de entrada de dados na datapath --
+--	process(clk)
+--	begin
+--		if clk'event and clk='1' then
+--			datapath_in <= dataOutBMemRead when selectMuxDataIn='0' else dataOutBMemWrite1;
+--		end if;
+--	end process;
+	
 	datapath_in <= dataOutBMemRead when selectMuxDataIn='0' else dataOutBMemWrite1;
 
 	Inst_datapath: datapath port map(
